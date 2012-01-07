@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.rdoc_options = ['--charset=UTF-8', '--markup tomdoc']
   s.extra_rdoc_files = %w(README.md LICENSE)
 
+  s.add_dependency('webmock', '~> 1.7.10')
+
   s.add_development_dependency('rspec', '~> 2.8.0')
   s.add_development_dependency('rake', '~> 0.9.0')
   s.add_development_dependency('rdoc', '~> 3.10')
