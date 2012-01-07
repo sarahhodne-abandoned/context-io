@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.rdoc_options = ['--charset=UTF-8', '--markup tomdoc', '--main README.md']
   s.extra_rdoc_files = %w(README.md LICENSE)
 
+  s.add_dependency('faraday', '~> 0.7.5')
+  s.add_dependency('multi_json', '~> 1.0.0')
   s.add_dependency('webmock', '~> 1.7.10')
 
   s.add_development_dependency('rspec', '~> 2.8.0')
