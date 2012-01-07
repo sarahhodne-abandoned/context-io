@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = %w(lib)
 
-  s.rdoc_options = ['--charset=UTF-8', '--markup tomdoc']
+  s.rdoc_options = ['--charset=UTF-8', '--markup tomdoc', '--main README.md']
   s.extra_rdoc_files = %w(README.md LICENSE)
 
   s.add_dependency('webmock', '~> 1.7.10')

@@ -53,6 +53,8 @@ require 'rdoc/task'
 RDoc::Task.new do |rdoc|
   rdoc.main = 'README.md'
   rdoc.markup = 'tomdoc'
+  rdoc.options << '--all'
+  rdoc.options << '--charset=UTF-8'
 end
 
 #############################################################################
