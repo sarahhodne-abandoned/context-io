@@ -1,6 +1,6 @@
 require 'faraday'
 require 'context-io/core_ext/hash'
-require 'context-io/faraday/request/contextio_oauth'
+require 'context-io/request/contextio_oauth'
 require 'context-io/response/parse_json'
 require 'context-io/response/raise_client_error'
 require 'context-io/response/raise_server_error'
