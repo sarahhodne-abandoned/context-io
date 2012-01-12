@@ -24,10 +24,12 @@ module ContextIO
     # Internal: Sets the Time the account was created.
     attr_writer :created
 
-    # Public: To be documented (format unknown).
+    # Public: Returns the Time the account was suspended, or nil if the account
+    # isn't suspended.
     attr_reader :suspended
 
-    # Internal: To be documented (format unknown).
+    # Internal: Sets the Time the account was suspended, or nil if the account
+    # isn't suspended.
     attr_writer :suspended
 
     # Public: Returns the Array of String email addresses associated with the
@@ -50,10 +52,12 @@ module ContextIO
     # Public: Sets the String last name of the account holder.
     attr_writer :last_name
 
-    # Public: To be documented (format unknown).
+    # Public: Returns the Time the password for the account expired, or nil if
+    # the password hasn't expired.
     attr_reader :password_expired
 
-    # Internal: To be documented (format unknown).
+    # Internal: Sets the Time the password for the account expired, or nil if
+    # the password hasn't expired.
     attr_writer :password_expired
 
     # Public: Returns an Array of Source objects associated with the account.
@@ -82,12 +86,24 @@ module ContextIO
       account = new
       account.id = json['id']
       account.username = json['username']
-      account.created = Time.at(json['created'])
-      account.suspended = json['suspended']
+      if json['created'] == 0
+        account.created = nil
+      else
+        account.created = Time.at(json['created'])
+      end
+      if json['suspended'] == 0
+        account.suspended = nil
+      else
+        account.suspended = Time.at(json['suspended'])
+      end
       account.email_addresses = json['email_addresses']
       account.first_name = json['first_name']
       account.last_name = json['last_name']
-      account.password_expired = json['password_expired']
+      if json['password_expired'] == 0
+        account.password_expired = nil
+      else
+        account.password_expired = json['password_expired']
+      end
       account.sources = json['sources'].map do |source|
         Source.from_json(source)
       end
