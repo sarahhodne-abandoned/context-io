@@ -1,5 +1,6 @@
 require 'faraday'
 require 'context-io/core_ext/hash'
+require 'context-io/request/contextio_oauth'
 require 'context-io/response/parse_json'
 require 'context-io/response/raise_client_error'
 require 'context-io/response/raise_server_error'
@@ -25,6 +26,7 @@ module ContextIO
       }
       Faraday.new(default_options.deep_merge(ContextIO.connection_options)) do |builder|
         builder.use Faraday::Request::UrlEncoded
+        builder.use Faraday::Request::ContextIOOAuth, ContextIO.authentication if ContextIO.authenticated?
         builder.use ContextIO::Response::RaiseClientError
         builder.use ContextIO::Response::ParseJson
         builder.use ContextIO::Response::RaiseServerError
