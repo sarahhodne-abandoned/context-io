@@ -29,18 +29,18 @@ describe ContextIO::Account do
       )
     end
 
-    it 'should return an array of Account objects' do
+    it 'returns an array of Account objects' do
       accounts = ContextIO::Account.all
       accounts.first.should be_a(ContextIO::Account)
     end
 
-    it 'should call the API request' do
+    it 'calls the API request' do
       ContextIO::Account.all
 
       @stub.should have_been_requested
     end
 
-    it 'should set the attributes on the Account objects' do
+    it 'sets the attributes on the Account objects' do
       ContextIO::Account.all.first.id.should == 'abcdef0123456789'
     end
   end
