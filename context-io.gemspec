@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
 
   s.name = 'context-io'
   s.version = '0.0.0'
-  s.date = '2012-01-06'
+  s.date = '2012-01-12'
   s.rubyforge_project = 'context-io'
 
   s.summary = 'Ruby wrapper for the context.io API.'
@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w(README.md LICENSE)
 
   s.add_dependency('faraday', '~> 0.7.5')
+  s.add_dependency('simple_oauth', '~> 0.1.5')
   s.add_dependency('multi_json', '~> 1.0.0')
   s.add_dependency('webmock', '~> 1.7.10')
 
@@ -30,12 +31,39 @@ Gem::Specification.new do |s|
 
   # = MANIFEST =
   s.files = %w(
+    Gemfile
+    Gemfile.lock
     LICENSE
     README.md
     Rakefile
     SPEC.md
     context-io.gemspec
     lib/context-io.rb
+    lib/context-io/account.rb
+    lib/context-io/authentication.rb
+    lib/context-io/config.rb
+    lib/context-io/connection.rb
+    lib/context-io/core_ext/hash.rb
+    lib/context-io/error.rb
+    lib/context-io/error/bad_request.rb
+    lib/context-io/error/client_error.rb
+    lib/context-io/error/forbidden.rb
+    lib/context-io/error/internal_server_error.rb
+    lib/context-io/error/not_found.rb
+    lib/context-io/error/payment_required.rb
+    lib/context-io/error/server_error.rb
+    lib/context-io/error/service_unavailable.rb
+    lib/context-io/error/unauthorized.rb
+    lib/context-io/faraday/request/contextio_oauth.rb
+    lib/context-io/request.rb
+    lib/context-io/resource.rb
+    lib/context-io/response/parse_json.rb
+    lib/context-io/response/raise_client_error.rb
+    lib/context-io/response/raise_server_error.rb
+    lib/context-io/version.rb
+    spec/account_spec.rb
+    spec/contextio_spec.rb
+    spec/spec_helper.rb
   )
   # = MANIFEST =
 
