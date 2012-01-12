@@ -75,6 +75,16 @@ module ContextIO
       end
     end
 
+    # Public: Finds an account given its ID.
+    #
+    # id - The String ID of the account to look up.
+    #
+    # Returns an Account instance with the data of the account with the given
+    #   ID.
+    def self.find(id)
+      Account.from_json(get("/2.0/accounts/#{id}"))
+    end
+
     # Internal: Create an Account instance from the JSON returned by the
     # Context.IO server.
     #
