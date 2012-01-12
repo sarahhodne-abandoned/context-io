@@ -8,8 +8,8 @@ module ContextIO
       {
         :consumer_key => consumer_key,
         :consumer_secret => consumer_secret,
-        :token => oauth_token,
-        :token_secret => oauth_token_secret,
+        :token => nil,
+        :token_secret => nil,
       }
     end
 
@@ -17,7 +17,7 @@ module ContextIO
     #
     # @return [Boolean]
     def authenticated?
-      authentication.values.all?
+      authentication[:consumer_key] and authentication[:consumer_secret]
     end
   end
 end

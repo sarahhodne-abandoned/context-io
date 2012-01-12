@@ -26,7 +26,7 @@ module ContextIO
       }
       Faraday.new(default_options.deep_merge(ContextIO.connection_options)) do |builder|
         builder.use Faraday::Request::UrlEncoded
-        builder.use Faraday::Request::ContextIOOAuth, ContextIO.authentication unless ContextIO.authenticated?
+        builder.use Faraday::Request::ContextIOOAuth, ContextIO.authentication if ContextIO.authenticated?
         builder.use ContextIO::Response::RaiseClientError
         builder.use ContextIO::Response::ParseJson
         builder.use ContextIO::Response::RaiseServerError
