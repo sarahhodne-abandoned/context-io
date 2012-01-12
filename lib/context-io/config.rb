@@ -51,4 +51,3 @@ module ContextIO
     end
   end
 end
-
