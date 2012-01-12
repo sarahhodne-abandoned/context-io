@@ -43,6 +43,26 @@ describe ContextIO::Account do
     it 'sets the attributes on the Account objects' do
       ContextIO::Account.all.first.id.should == 'abcdef0123456789'
     end
+
+    it 'sends a query if one is given' do
+      @stub = @stub.with(:query => {
+        :email => 'me@example.com',
+        :status => 'OK',
+        :status_ok => '1',
+        :limit => '1',
+        :offset => '0'
+      })
+
+      ContextIO::Account.all(
+        :email => 'me@example.com',
+        :status => :ok,
+        :status_ok => true,
+        :limit => 1,
+        :offset => 0
+      )
+
+      @stub.should have_been_requested
+    end
   end
 
   describe '.find' do

@@ -68,9 +68,35 @@ module ContextIO
 
     # Public: Get all accounts.
     #
+    # query - An optional Hash (default: {}) containing a query to filter the
+    #         responses by:
+    #         :email     - Only return accounts associated to this String email
+    #                      address (optional).
+    #         :status    - Only return accounts with sources whose status is of
+    #                      a specific Symbol value. If an account has many
+    #                      sources, only those matching the given value will be
+    #                      included in the response. Possible statuses are:
+    #                      :invalid_credentials, :connection_impossible,
+    #                      :no_access_to_all_mail, :ok, :temp_disabled and
+    #                      :disabled (optional).
+    #         :status_ok - A Boolean value representing whether to only return
+    #                      accounts with sources that are working or not
+    #                      working properly (true/false, respectively). As with
+    #                      the :status filter above, only sources matching the
+    #                      specific value are included in the response
+    #                      (optional).
+    #         :limit     - The Integer maximum number of results to return
+    #                      (optional).
+    #         :offset    - The Integer offset to start the list at (zero-based)
+    #                      (optional).
+    #
     # Returns an Array of Account objects.
-    def self.all
-      get('/2.0/accounts').map do |account|
+    def self.all(query={})
+      query[:status] = query[:status].to_s.upcase if query[:status]
+      if query.has_key?(:status_ok)
+        query[:status_ok] = query[:status_ok] ? '1' : '0'
+      end
+      get('/2.0/accounts', query).map do |account|
         Account.from_json(account)
       end
     end
