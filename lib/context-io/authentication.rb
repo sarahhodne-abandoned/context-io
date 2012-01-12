@@ -1,9 +1,7 @@
 module ContextIO
-  # @private
+  # Internal: Methods related to authentication and configuration.
   module Authentication
-    # Authentication hash
-    #
-    # @return [Hash]
+    # Internal: Returns the authentication Hash given to SimpleOAuth.
     def authentication
       {
         :consumer_key => consumer_key,
@@ -13,9 +11,8 @@ module ContextIO
       }
     end
 
-    # Check whether user is authenticated
-    #
-    # @return [Boolean]
+    # Internal: Returns a Boolean specifying whether authentication details
+    # have been set up or not.
     def authenticated?
       authentication[:consumer_key] and authentication[:consumer_secret]
     end
