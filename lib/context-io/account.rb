@@ -134,6 +134,24 @@ module ContextIO
       self.id ? update_record : create_record
     end
 
+    # Public: Update attributes on the account object and then send them to
+    # Context.IO.
+    #
+    # attributes - A Hash containing the attributes to update:
+    #              :first_name - The String first name of the account holder.
+    #              :last_name  - The String last name of the account holder.
+    #
+    # Returns true if the update was successful, or false if it was
+    # unsuccessful.
+    def update_attributes(attributes)
+      self.first_name = attributes[:first_name] if attributes[:first_name]
+      self.last_name = attributes[:last_name] if attributes[:last_name]
+
+      response = put("/2.0/accounts/#{self.id}", attributes)
+
+      response['success']
+    end
+
     # Internal: Create the account on Context.IO.
     #
     # This will only send the first email address in the email_addresses

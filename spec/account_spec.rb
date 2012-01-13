@@ -201,5 +201,65 @@ describe ContextIO::Account do
       end
     end
   end
+
+  describe '#update_attributes' do
+    let(:existing_account) do
+      account = ContextIO::Account.new(:email => 'foo@bar.com')
+      account.id = '1234567890abcdef' # Pretend we're an "old" account
+
+      account
+    end
+
+    it 'calls the API request' do
+      @stub = stub_request(:put,
+        'https://api.context.io/2.0/accounts/1234567890abcdef').
+        with(:body => { :first_name => 'John' }).
+        to_return(
+        :body => '{
+          "success": true
+        }'
+      )
+
+      existing_account.update_attributes(:first_name => 'John')
+
+      @stub.should have_been_requested
+    end
+
+    it 'returns true if the update was successful' do
+      stub_request(:put, 'https://api.context.io/2.0/accounts/1234567890abcdef').
+        to_return(
+        :body => '{
+          "success": true
+        }'
+      )
+
+      existing_account.update_attributes(:first_name => 'John').should be_true
+    end
+
+    it 'returns false if the update was unsuccessful' do
+      stub_request(:put, 'https://api.context.io/2.0/accounts/1234567890abcdef').
+        to_return(
+        :body => '{
+          "success": false
+        }'
+      )
+
+      existing_account.update_attributes(:first_name => 'John').should be_false
+    end
+
+
+    it 'sets the attributes on the account object' do
+      stub_request(:put, 'https://api.context.io/2.0/accounts/1234567890abcdef').
+        to_return(
+        :body => '{
+          "success": true
+        }'
+      )
+
+      existing_account.update_attributes(:first_name => 'John')
+
+      existing_account.first_name.should == 'John'
+    end
+  end
 end
 
