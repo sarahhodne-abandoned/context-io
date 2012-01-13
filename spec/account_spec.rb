@@ -118,5 +118,88 @@ describe ContextIO::Account do
       account.first_name.should == 'John'
     end
   end
+
+  describe '#save' do
+    let(:existing_record) do
+      account = ContextIO::Account.new(:email => 'foo@bar.com')
+      account.id = '1234567890abcdef' # We don't want to test #save here...
+
+      account
+    end
+
+    it 'returns true if the save was successful' do
+      @stub = stub_request(:post, 'https://api.context.io/2.0/accounts').
+        with(:body => { :email => 'me@example.com' }).
+        to_return(
+        :body => '{
+          "success": true,
+          "id": "abcdef0123456789",
+          "resource_url": "https://api.context.io/2.0/accounts/abcdef0123456789"
+        }'
+      )
+
+      account = ContextIO::Account.new(:email => 'me@example.com')
+
+      account.save.should be_true
+    end
+
+    it 'returns false if the save was unsuccessful' do
+      @stub = stub_request(:post, 'https://api.context.io/2.0/accounts').
+        with(:body => { :email => 'me@example.com' }).
+        to_return(
+        :body => '{
+          "success": false
+        }'
+      )
+
+      account = ContextIO::Account.new(:email => 'me@example.com')
+
+      account.save.should be_false
+    end
+
+    context 'for a new account' do
+      before(:each) do
+        @stub = stub_request(:post, 'https://api.context.io/2.0/accounts').
+          with(:body => { :email => 'me@example.com' }).
+          to_return(
+          :body => '{
+            "success": true,
+            "id": "abcdef0123456789",
+            "resource_url": "https://api.context.io/2.0/accounts/abcdef0123456789"
+          }'
+        )
+      end
+
+      it 'calls the API request' do
+        ContextIO::Account.new(:email => 'me@example.com').save
+
+        @stub.should have_been_requested
+      end
+
+      it 'sets the ID of the account' do
+        account = ContextIO::Account.new(:email => 'me@example.com')
+        account.save
+        account.id.should == 'abcdef0123456789'
+      end
+    end
+
+    context 'for an existing account' do
+      it 'calls the API request' do
+        @stub = stub_request(:put,
+          'https://api.context.io/2.0/accounts/1234567890abcdef').
+          with(:body => { :first_name => 'John' }).
+          to_return(
+          :body => '{
+            "success": true
+          }'
+        )
+
+        existing_record.first_name = 'John'
+        existing_record.save
+
+        @stub.should have_been_requested
+      end
+    end
+  end
 end
 

@@ -127,6 +127,53 @@ module ContextIO
       self.last_name = attributes[:last_name]
     end
 
+    # Public: Send the account info to Context.IO
+    #
+    # Returns true if the save was successful or false if it was unsuccessful.
+    def save
+      self.id ? update_record : create_record
+    end
+
+    # Internal: Create the account on Context.IO.
+    #
+    # This will only send the first email address in the email_addresses
+    # attribute, as well as the first and last name if they are specified.
+    #
+    # Returns true if the creation was successful, or false if it was
+    #   unsuccessful.
+    def create_record
+      unless self.email_addresses && self.email_addresses.first
+        raise ArgumentError.new('You must specify an email address')
+      end
+
+      attributes = { :email => self.email_addresses.first }
+      attributes[:first_name] = self.first_name if self.first_name
+      attributes[:last_name] = self.last_name if self.last_name
+
+      response = post('/2.0/accounts', attributes)
+      self.id = response['id']
+
+      @saved = response['success']
+    end
+    private :create_record
+
+    # Internal: Update the account on Context.IO.
+    #
+    # This will only send the first and last name, as they are the only
+    # attributes the API allows you to update.
+    #
+    # Returns true if the creation was successful, or false if it was
+    #   unsuccessful.
+    def update_record
+      attributes = {}
+      attributes[:first_name] = self.first_name if self.first_name
+      attributes[:last_name] = self.last_name if self.last_name
+      response = put("/2.0/accounts/#{self.id}", attributes)
+
+      response['success']
+    end
+    private :update_record
+
     # Internal: Create an Account instance from the JSON returned by the
     # Context.IO server.
     #
