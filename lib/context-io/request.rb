@@ -34,14 +34,25 @@ module ContextIO
       request(:post, path, params)
     end
 
+    # Internal: Perform an HTTP PUT request.
+    #
+    # path    - The String path for the request
+    # params  - A Hash of params to put in the body of the request. (default:
+    #           {})
+    #
+    # Returns the parsed JSON response body.
+    def put(path, params={})
+      request(:put, path, params)
+    end
+
     # Internal: Perform an HTTP request.
     #
-    # method  - The HTTP method to send as a Symbol (supports :delete, :get
-    #           and :post).
+    # method  - The HTTP method to send as a Symbol (supports :delete, :get,
+    #           :put and :post).
     # path    - The String path for the request.
     # params  - A Hash of params to put in the query part of the URL (for
     #           DELETE and GET requests) or in the body of the request (for
-    #           POST requests).
+    #           POST and PUT requests).
     #
     # Returns the parsed JSON response body.
     def request(method, path, params)
@@ -49,7 +60,7 @@ module ContextIO
         case method.to_sym
         when :delete, :get
           request.url(path, params)
-        when :post
+        when :post, :put
           request.path = path
           request.body = params unless params.empty?
         end
