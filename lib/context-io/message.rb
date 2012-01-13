@@ -56,8 +56,8 @@ module ContextIO
     # format and both formats are stored.
     #
     # format - String determining required format of message body.
-    # Allowed values are "plain" and "html". Default value is "plain".
-    def body(format = "plain")
+    # Allowed values are :plain and :html. Default value is :plain.
+    def body(format = :plain)
       if @body.empty?
         get("#{url}/body").each do |b|
           @body[b["type"]] = b["content"]
