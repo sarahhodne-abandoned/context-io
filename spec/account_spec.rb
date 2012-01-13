@@ -107,5 +107,16 @@ describe ContextIO::Account do
       ContextIO::Account.find('abcdef0123456789').id.should == 'abcdef0123456789'
     end
   end
+
+  describe '.new' do
+    it 'returns an instance of Account' do
+      ContextIO::Account.new.should be_a(ContextIO::Account)
+    end
+
+    it 'sets the given attributes on the Account object' do
+      account = ContextIO::Account.new(:first_name => 'John')
+      account.first_name.should == 'John'
+    end
+  end
 end
 

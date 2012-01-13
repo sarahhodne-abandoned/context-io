@@ -111,6 +111,22 @@ module ContextIO
       Account.from_json(get("/2.0/accounts/#{id}"))
     end
 
+    # Public: Initialize an Account.
+    #
+    # attributes - A Hash of attributes to set on the account (default value:
+    #              {}):
+    #              :email      - The String primary email address of the
+    #                            account holder (optional).
+    #              :first_name - The String first name of the account holder
+    #                            (optional).
+    #              :last_name  - The String last name of the account holder
+    #                            (optional).
+    def initialize(attributes={})
+      self.email_addresses = [attributes[:email]] if attributes[:email]
+      self.first_name = attributes[:first_name]
+      self.last_name = attributes[:last_name]
+    end
+
     # Internal: Create an Account instance from the JSON returned by the
     # Context.IO server.
     #
