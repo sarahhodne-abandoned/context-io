@@ -76,7 +76,7 @@ describe ContextIO::Message do
     it 'retrieves flags' do
       msg_id = '4f0f1c533f757e0f3c00000b'
       flags_response = stub_request(:get, "#{@messages_url}/#{msg_id}/flags").
-        to_return(:body => ['\\Seen'].to_json)
+        to_return(:body => MultiJson.encode(['\\Seen']))
       flags = ContextIO::Message.all(@account).first.flags
       flags.should be_a(Array)
       flags.first.should == '\\Seen'
@@ -158,10 +158,10 @@ describe ContextIO::Message do
 
   describe '.find' do
     before(:each) do
-      @messages = JSON.parse(File.read(File.join(@fixtures_path, 'messages.json')))
+      @messages = MultiJson.decode(File.read(File.join(@fixtures_path, 'messages.json')))
       @find_url = "#{@messages_url}/#{@messages.first['message_id']}"
       @response = stub_request(:get, @find_url).
-        to_return(:body => @messages.first.to_json)
+        to_return(:body => MultiJson.encode(@messages.first))
     end
 
     it 'calls API method' do
