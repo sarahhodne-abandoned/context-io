@@ -1,9 +1,21 @@
+# Hash extensions
+#
+# This is borrowed from ActiveSupport. We don't want the entire ActiveSupport
+# library (it's huge), so we'll just add this method.
 class Hash
-  # Public: Merges self with another Hash, recursively.
+  # Merge self with another hash recursively
   #
-  # hash - The Hash to merge
+  # @api public
   #
-  # Returns self merged recursively with the passed Hash.
+  # @param [Hash] hash The hash to merge into this one.
+  #
+  # @example Merge two hashes with some common keys
+  #   a_hash = { :foo => :bar, :baz => { :foobar => "hey" }}
+  #   another_hash = { :foo => :foobar, :baz => { :foo => :bar }}
+  #   a_hash.deep_merge(another_hash)
+  #   # => { :foo => :foobar, :baz => { :foobar => "hey", :foo => :bar }}
+  #
+  # @return [Hash] The given hash merged recursively into this one.
   def deep_merge(hash)
     target = self.dup
     hash.keys.each do |key|

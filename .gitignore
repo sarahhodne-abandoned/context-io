@@ -1,4 +1,5 @@
-html
+doc
+.yardoc
 pkg
 Gemfile.lock
 

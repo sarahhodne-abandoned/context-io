@@ -49,13 +49,8 @@ require 'rspec/core/rake_task'
 
 RSpec::Core::RakeTask.new(:spec)
 
-require 'rdoc/task'
-RDoc::Task.new do |rdoc|
-  rdoc.main = 'README.md'
-  rdoc.markup = 'tomdoc'
-  rdoc.options << '--all'
-  rdoc.options << '--charset=UTF-8'
-end
+require 'yard'
+YARD::Rake::YardocTask.new
 
 #############################################################################
 #

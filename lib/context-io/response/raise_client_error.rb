@@ -7,15 +7,26 @@ require 'context-io/error/payment_required'
 
 module ContextIO
   module Response
-    # Internal: Faraday middleware for raising errors when the server returns
-    # a 4xx HTTP status code.
+    # Faraday middleware for raising errors on 4xx HTTP status codes
+    #
+    # @api private
     class RaiseClientError < Faraday::Response::Middleware
-      # Internal: Check the status code and raise an error if there's a 4xx
-      # status code.
+      # Raise an error if the response has a 4xx status code
       #
-      # Raises a ContextIO::Error if the status code is a 4xx code.
+      # @raise [ContextIO::Error::ClientError] If the response has a 4xx status
+      #   code.
+      # @raise [ContextIO::Error::BadRequest] If the response has a 400 status
+      #   code.
+      # @raise [ContextIO::Error::Unauthorized] If the response has a 401 status
+      #   code.
+      # @raise [ContextIO::Error::PaymentRequired] If the response has a 402
+      #   status code.
+      # @raise [ContextIO::Error::Forbidden] If the response has a 403 status
+      #   code.
+      # @raise [ContextIO::Error::NotFound] If the response has a 404 status
+      #   code.
       #
-      # Returns nothing.
+      # @return [void]
       def on_complete(env)
         case env[:status].to_i
         when 400
@@ -33,9 +44,8 @@ module ContextIO
 
       private
 
-      # Internal: Return the error message if one is defined in the body.
-      #
-      # Returns the String error message (or an empty String).
+      # @return [String] The error message if one is defines, or an empty
+      #   string.
       def error_body(body)
         if body['type'] == 'error' && body['value']
           body['value']

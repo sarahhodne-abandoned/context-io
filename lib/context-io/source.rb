@@ -1,15 +1,18 @@
 require 'context-io/resource'
 
 module ContextIO
-  # Public: A source. Create one of these for each mailbox a user has.
+  # A message source. Create one of these for each mailbox a user has
+  #
+  # @api public
   class Source < ContextIO::Resource
-    # Internal: Create a Source instance from the JSON returned by the
-    # Context.IO server.
+    # Create a Source instance from the JSON returned by the Context.IO server
     #
-    # json - A Hash containing the parsed JSON returned by the Context.IO
-    #        server. See their documentation for possible keys.
+    # @api private
     #
-    # Returns a ContextIO::Source instance.
+    # @param [Hash] The parsed JSON object returned by a Context.IO API request.
+    #   See their documentation for what keys are possible.
+    #
+    # @return [Source] A source with the given attributes.
     def self.from_json(json)
       source = new
       # TODO: Add the necessary keys.

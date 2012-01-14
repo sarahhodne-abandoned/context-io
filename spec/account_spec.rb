@@ -1,6 +1,19 @@
 require 'spec_helper'
 
 describe ContextIO::Account do
+  let(:existing_account) do
+    stub_request(:post, 'https://api.context.io/2.0/accounts').
+      to_return(
+        :body => '{
+          "success": true,
+          "id": "1234567890abcdef",
+          "resource_url": "https://api.context.io/2.0/accounts/1234567890abcdef"
+        }')
+    account = ContextIO::Account.new(:email => 'foo@bar.com')
+    account.save
+
+    account
+  end
   describe '.all' do
     before(:each) do
       json_accs = File.read(File.expand_path(File.join(File.dirname(__FILE__), "fixtures", "accounts.json")))
@@ -98,12 +111,7 @@ describe ContextIO::Account do
   end
 
   describe '#save' do
-    let(:existing_record) do
-      account = ContextIO::Account.new(:email => 'foo@bar.com')
-      account.id = '1234567890abcdef' # We don't want to test #save here...
 
-      account
-    end
 
     it 'returns true if the save was successful' do
       @stub = stub_request(:post, 'https://api.context.io/2.0/accounts').
@@ -172,8 +180,8 @@ describe ContextIO::Account do
           }'
         )
 
-        existing_record.first_name = 'John'
-        existing_record.save
+        existing_account.first_name = 'John'
+        existing_account.save
 
         @stub.should have_been_requested
       end
@@ -181,13 +189,6 @@ describe ContextIO::Account do
   end
 
   describe '#update_attributes' do
-    let(:existing_account) do
-      account = ContextIO::Account.new(:email => 'foo@bar.com')
-      account.id = '1234567890abcdef' # Pretend we're an "old" account
-
-      account
-    end
-
     it 'calls the API request' do
       @stub = stub_request(:put,
         'https://api.context.io/2.0/accounts/1234567890abcdef').

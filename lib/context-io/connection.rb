@@ -6,14 +6,17 @@ require 'context-io/response/raise_client_error'
 require 'context-io/response/raise_server_error'
 
 module ContextIO
-  # Internal: Methods for creating a connection to the API server.
+  # Methods for creating a connection to the API server.
+  #
+  # @api private
+  # @private
   module Connection
-    private
-
-    # Internal: Create a Faraday connection object that's set up with the
-    # correct configuration.
+    # Create and configure a Faraday connection
     #
-    # Returns a Faraday::Connection object
+    # @api private
+    #
+    # @return [Faraday::Connection] A Connection object that's correctly
+    #   configured.
     def connection
       default_options = {
         :headers => {
@@ -33,6 +36,7 @@ module ContextIO
         builder.adapter(ContextIO.adapter)
       end
     end
+    private :connection
   end
 end
 

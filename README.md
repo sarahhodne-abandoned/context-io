@@ -4,7 +4,7 @@ ContextIO - Extract data from email
 [![Build Status](https://secure.travis-ci.org/dvyjones/context-io.png)](http://travis-ci.org/dvyjones/context-io)
 [![Dependency Status](https://gemnasium.com/dvyjones/context-io.png)](https://gemnasium.com/dvyjones/context-io)
 
-## DESCRIPTION
+## Description
 
 ContextIO is a Ruby wrapper for the [Context.IO][contextio] web service.
 
@@ -19,20 +19,24 @@ ContextIO follows the rules of [Semantic Versioning][semver] and uses
 [tomdoc]: http://tomdoc.org
 
 
-## INSTALLATION
+## Installation
 
 The best way to install ContextIO is through Rubygems:
 
-    $ [sudo] gem install context-io
+```
+$ [sudo] gem install context-io
+```
 
 If you're installing from source, you can use [Bundler][bundler] to pick up all
 the gems:
 
-    $ bundle install
+```
+$ bundle install
+```
 
 [bundler]: http://gembundler.org
 
-## USAGE
+## Usage
 
 The ContextIO classes map pretty much one-to-one to the Context.IO API
 resources, which you can find [on their documentation site][contextiodocs].
@@ -70,8 +74,7 @@ You can also find accounts matching a given email address.
 account = ContextIO::Account.all(:email => 'me@example.org').first
 ```
 
-Contributing
-------------
+## Contributing
 
 In the spirit of [free software][free-sw], **everyone** is encouraged to help
 improve this project.
@@ -89,8 +92,7 @@ Here are some ways *you* can contribute:
 * by closing [issues][issues]
 * by reviewing patches
 
-Submitting an Issue
--------------------
+### Submitting an Issue
 
 We use the [GitHub issue tracker][issues] to track bugs and features. Before
 submitting a bug report or feature request, check to make sure it hasn't
@@ -102,8 +104,7 @@ details that may be necessary to reproduce the bug, including your gem version,
 Ruby version and operating system. Ideally, a bug report should include a pull
 request with failing specs.
 
-Submitting a Pull Request
--------------------------
+### Submitting a Pull Request
 
 1. Fork the project.
 2. Create a topic branch.
@@ -123,7 +124,6 @@ Submitting a Pull Request
 [issues]: https://github.com/dvyjones/context-io/issues
 
 
-Copyright
----------
+## Copyright
 
 Copyright (c) 2012 Henrik Hodne. See LICENSE for details.

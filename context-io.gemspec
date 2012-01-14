@@ -31,7 +31,10 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency('rspec', '~> 2.8.0')
   s.add_development_dependency('rake', '~> 0.9.0')
-  s.add_development_dependency('rdoc', '~> 3.10')
+  s.add_development_dependency('yard', '~> 0.7.4')
+  s.add_development_dependency('yard-rspec', '~> 0.1')
+  s.add_development_dependency('redcarpet', '~> 1.17.2')
+  s.add_development_dependency('github-markup', '~> 0.7.0')
 
   # = MANIFEST =
   s.files = %w(

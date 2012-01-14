@@ -1,96 +1,82 @@
+# encoding: utf-8
+
 require 'context-io/resource'
 
 module ContextIO
-  # Public: An account. Create one of these for every user.
+  # An account. Create one of these for every user.
   #
   # This does not represent a mail account. An Account can have several mail
-  # accounts attached to it.
+  # accounts attached to it as {Source}s.
+  #
+  # Only the {#first_name} and {#last_name} can be changed after creation.
   class Account < ContextIO::Resource
-    # Public: Returns the unique String ID of the account.
+    # @api public
+    # @return [String] The unique ID of the account.
     attr_reader :id
 
-    # Internal: Sets the unique String ID of the account.
-    attr_writer :id
-
-    # Public: Returns the String username of the account.
+    # @api public
+    # @return [String] The username of the account.
     attr_reader :username
 
-    # Internal: Sets the String username of the account.
-    attr_writer :username
-
-    # Public: Returns the Time the account was created.
+    # @api public
+    # @return [Time] When the account was created.
     attr_reader :created
 
-    # Internal: Sets the Time the account was created.
-    attr_writer :created
-
-    # Public: Returns the Time the account was suspended, or nil if the account
-    # isn't suspended.
+    # @api public
+    # @return [Time, nil] When the account was suspended, or nil if the account
+    #   isn't suspended.
     attr_reader :suspended
 
-    # Internal: Sets the Time the account was suspended, or nil if the account
-    # isn't suspended.
-    attr_writer :suspended
-
-    # Public: Returns the Array of String email addresses associated with the
-    # account.
+    # @api public
+    # @return [Array<String>] The email addresses associated with the account.
     attr_reader :email_addresses
 
-    # Internal: Sets the Array of String email addresses associated with the
-    # account.
-    attr_writer :email_addresses
+    # @api public
+    # @return [String] The first name of the account holder.
+    attr_accessor :first_name
 
-    # Public: Returns the String first name of the account holder.
-    attr_reader :first_name
+    # @api public
+    # @return [String] The last name of the account holder.
+    attr_accessor :last_name
 
-    # Public: Sets the String first name of the account holder.
-    attr_writer :first_name
-
-    # Public: Returns the String last name of the account holder.
-    attr_reader :last_name
-
-    # Public: Sets the String last name of the account holder.
-    attr_writer :last_name
-
-    # Public: Returns the Time the password for the account expired, or nil if
-    # the password hasn't expired.
+    # @api public
+    # @return [Time, nil] When the account password expired, or nil if the
+    #   password hasn't expired.
     attr_reader :password_expired
 
-    # Internal: Sets the Time the password for the account expired, or nil if
-    # the password hasn't expired.
-    attr_writer :password_expired
-
-    # Public: Returns an Array of Source objects associated with the account.
+    # @api public
+    # @return [Array<Source>] The sources associated with this account.
     attr_reader :sources
 
-    # Internal: Sets the Array of Source objects associated with the account.
-    attr_writer :sources
-
-    # Public: Get all accounts.
+    # Get all the accounts, optionally filtered with a query
     #
-    # query - An optional Hash (default: {}) containing a query to filter the
-    #         responses by:
-    #         :email     - Only return accounts associated to this String email
-    #                      address (optional).
-    #         :status    - Only return accounts with sources whose status is of
-    #                      a specific Symbol value. If an account has many
-    #                      sources, only those matching the given value will be
-    #                      included in the response. Possible statuses are:
-    #                      :invalid_credentials, :connection_impossible,
-    #                      :no_access_to_all_mail, :ok, :temp_disabled and
-    #                      :disabled (optional).
-    #         :status_ok - A Boolean value representing whether to only return
-    #                      accounts with sources that are working or not
-    #                      working properly (true/false, respectively). As with
-    #                      the :status filter above, only sources matching the
-    #                      specific value are included in the response
-    #                      (optional).
-    #         :limit     - The Integer maximum number of results to return
-    #                      (optional).
-    #         :offset    - The Integer offset to start the list at (zero-based)
-    #                      (optional).
+    # @api public
     #
-    # Returns an Array of Account objects.
+    # @param [Hash] query The query to filter accounts by. All fields are
+    #   optional.
+    # @option query [String] :email Only return accounts associated with this
+    #   email address.
+    # @option query [:invalid_credentials, :connection_impossible,
+    #   :no_access_to_all_mail, :ok, :temp_disabled, :disabled] :status Only
+    #   return accounts with sources whose status is the one given. If an
+    #   account has several sources, only those matching the given status will
+    #   be included in the response.
+    # @option query [true, false] :status_ok Whether to only return accounts
+    #   with sources that are working or not working properly (true/false,
+    #   respectively). As with the `:status` filter above, only sources matching
+    #   the specific value are included in the response.
+    # @option query [Integer] :limit The maximum number of results to return.
+    # @option query [Integer] :offset The offset to start the list at (0 is no
+    #   offset).
+    #
+    # @example Fetch all accounts
+    #   ContextIO::Account.all
+    #
+    # @example Fetch all accounts with the email address me@example.com
+    #   ContextIO::Account.all(:email => 'me@example.com')
+    #
+    # @return [Array<Account>] The accounts matching the query, or all if no
+    #   query is given.
     def self.all(query={})
       query[:status] = query[:status].to_s.upcase if query[:status]
       if query.has_key?(:status_ok)
@@ -101,64 +87,97 @@ module ContextIO
       end
     end
 
-    # Public: Finds an account given its ID.
+    # Find an account given its ID
     #
-    # id - The String ID of the account to look up.
+    # @api public
     #
-    # Returns an Account instance with the data of the account with the given
-    #   ID.
+    # @param [String] id The ID of the account to look up.
+    #
+    # @example Find the account with the ID 'foobar'
+    #   ContextIO::Account.find('foobar')
+    #
+    # @return [Account] The account with the given ID.
     def self.find(id)
       Account.from_json(get("/2.0/accounts/#{id}"))
     end
 
-    # Public: Initialize an Account.
+    # Initialize an Account
     #
-    # attributes - A Hash of attributes to set on the account (default value:
-    #              {}):
-    #              :email      - The String primary email address of the
-    #                            account holder (optional).
-    #              :first_name - The String first name of the account holder
-    #                            (optional).
-    #              :last_name  - The String last name of the account holder
-    #                            (optional).
+    # @api public
+    #
+    # @param [Hash] attributes The attributes to set on the account (all values
+    #   are optional).
+    # @option attributes [String] :email The primary email address of the
+    #   account holder.
+    # @option attributes [String] :first_name The first name of the account
+    #   holder.
+    # @option attributes [String] :last_name The last name of the account
+    #   holder.
+    #
+    # @example Initialize an account with the email 'me@example.com'
+    #   ContextIO::Account.new(:email => 'me@example.com')
     def initialize(attributes={})
-      self.email_addresses = [attributes[:email]] if attributes[:email]
-      self.first_name = attributes[:first_name]
-      self.last_name = attributes[:last_name]
+      @email_addresses = [attributes[:email]] if attributes[:email]
+      @first_name = attributes[:first_name]
+      @last_name = attributes[:last_name]
     end
 
-    # Public: Send the account info to Context.IO
+    # Send the account info to Context.IO
     #
-    # Returns true if the save was successful or false if it was unsuccessful.
+    # If this is the first time the account is sent to Context.IO, the first
+    # email address set will be sent as the primary email address, and the first
+    # and last name will be sent if they are specified. You are required to
+    # specify one email address.
+    #
+    # If the account has been sent to Context.IO before, this will update the
+    # first and last name.
+    #
+    # @api public
+    #
+    # @raise [ArgumentError] If there isn't at least one email address specified
+    #   in the {#email_addresses} field.
+    #
+    # @example Create an account
+    #   account = ContextIO::Account.new(:email => 'me@example.com')
+    #   account.save
+    #
+    # @return [true, false] Whether the save succeeded or not.
     def save
       self.id ? update_record : create_record
     end
 
-    # Public: Update attributes on the account object and then send them to
-    # Context.IO.
+    # Update attributes on the account object and then send them to Context.IO
     #
-    # attributes - A Hash containing the attributes to update:
-    #              :first_name - The String first name of the account holder.
-    #              :last_name  - The String last name of the account holder.
+    # @api public
     #
-    # Returns true if the update was successful, or false if it was
-    # unsuccessful.
+    # @param [Hash] attributes The attributes to update.
+    # @option attributes [String] :first_name The first name of the account
+    #   holder.
+    # @option attributes [String] :last_name The last name of the account
+    #   holder.
+    #
+    # @example Update the account holder's name to "John Doe"
+    #   account.update_attributes(:first_name => 'John', :last_name => 'Doe')
+    #
+    # @return [true, false] Whether the update succeeded or not.
     def update_attributes(attributes)
-      self.first_name = attributes[:first_name] if attributes[:first_name]
-      self.last_name = attributes[:last_name] if attributes[:last_name]
+      @first_name = attributes[:first_name] if attributes[:first_name]
+      @last_name = attributes[:last_name] if attributes[:last_name]
 
       response = put("/2.0/accounts/#{self.id}", attributes)
 
       response['success']
     end
 
-    # Internal: Create the account on Context.IO.
+    # Create the account on Context.IO
+    #
+    # @api private
     #
     # This will only send the first email address in the email_addresses
-    # attribute, as well as the first and last name if they are specified.
+    # attribute (which is required) as well as the first and last name if they
+    # are not-falsey.
     #
-    # Returns true if the creation was successful, or false if it was
-    #   unsuccessful.
+    # @return [true, false] Whether the creation succeeded or not.
     def create_record
       unless self.email_addresses && self.email_addresses.first
         raise ArgumentError.new('You must specify an email address')
@@ -169,19 +188,20 @@ module ContextIO
       attributes[:last_name] = self.last_name if self.last_name
 
       response = post('/2.0/accounts', attributes)
-      self.id = response['id']
+      @id = response['id']
 
       @saved = response['success']
     end
     private :create_record
 
-    # Internal: Update the account on Context.IO.
+    # Update the account on Context.IO
     #
-    # This will only send the first and last name, as they are the only
-    # attributes the API allows you to update.
+    # Only sends the first and last name, as they are the only attributes the
+    # Context.IO API allows you to update.
     #
-    # Returns true if the creation was successful, or false if it was
-    #   unsuccessful.
+    # @api private
+    #
+    # @return [true, false] Whether the update succeeded or not.
     def update_record
       attributes = {}
       attributes[:first_name] = self.first_name if self.first_name
@@ -192,37 +212,40 @@ module ContextIO
     end
     private :update_record
 
-    # Internal: Create an Account instance from the JSON returned by the
-    # Context.IO server.
+    # Create an Account instance from the JSON returned by the Context.IO server
     #
-    # json - The parsed JSON returned by the Context.IO server. See their
-    #        documentation for what keys are possible.
+    # @api private
     #
-    # Returns a ContextIO::Account instance.
+    # @param [Hash] json The parsed JSON object returned by a Context.IO API
+    #   request. See their documentation for what keys are possible.
+    #
+    # @return [Account] An account with the given attributes.
     def self.from_json(json)
       account = new
-      account.id = json['id']
-      account.username = json['username']
-      if json['created'] == 0
-        account.created = nil
-      else
-        account.created = Time.at(json['created'])
-      end
-      if json['suspended'] == 0
-        account.suspended = nil
-      else
-        account.suspended = Time.at(json['suspended'])
-      end
-      account.email_addresses = json['email_addresses']
-      account.first_name = json['first_name']
-      account.last_name = json['last_name']
-      if json['password_expired'] == 0
-        account.password_expired = nil
-      else
-        account.password_expired = json['password_expired']
-      end
-      account.sources = json['sources'].map do |source|
-        Source.from_json(source)
+      account.instance_eval do
+        @id = json['id']
+        @username = json['username']
+        if json['created'] == 0
+          @created = nil
+        else
+          @created = Time.at(json['created'])
+        end
+        if json['suspended'] == 0
+          @suspended = nil
+        else
+          @suspended = Time.at(json['suspended'])
+        end
+        @email_addresses = json['email_addresses']
+        @first_name = json['first_name']
+        @last_name = json['last_name']
+        if json['password_expired'] == 0
+          @password_expired = nil
+        else
+          @password_expired = json['password_expired']
+        end
+        @sources = json['sources'].map do |source|
+          Source.from_json(source)
+        end
       end
 
       account

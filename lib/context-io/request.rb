@@ -1,60 +1,57 @@
 module ContextIO
-  # Internal: Defines HTTP request methods.
+  # Methods for sending HTTP requests
+  #
+  # @api private
   module Request
-    # Internal: Perform an HTTP DELETE request.
+    # Perform an HTTP DELETE request
     #
-    # path    - The String path for the request.
-    # params  - A Hash of params to put in the query part of the URL. (default:
-    #           {})
+    # @param [String] path The path to request.
+    # @param [Hash] params Parameters to put in the query part of the URL
     #
-    # Returns the parsed JSON body
+    # @return [Hash, Array, Object] The parsed JSON response.
     def delete(path, params={})
       request(:delete, path, params)
     end
 
-    # Internal: Perform an HTTP GET request.
+    # Perform an HTTP GET request
     #
-    # path    - The String path for the request.
-    # params  - A Hash of params to put in the query part of the URL. (default:
-    #           {})
+    # @param [String] path The path to request.
+    # @param [Hash] params The parameters to put in the query part of the URL.
     #
-    # Returns the parsed JSON body.
+    # @return [Hash, Array, Object] The parsed JSON response.
     def get(path, params={})
       request(:get, path, params)
     end
 
-    # Internal: Perform an HTTP POST request.
+    # Perform an HTTP POST request
     #
-    # path    - The String path for the request.
-    # params  - A Hash of params to put in the body of the request. (default:
-    #           {})
+    # @param [String] path The path to request.
+    # @param [Hash] params The parameters to put in the body of the request.
     #
-    # Returns the parsed JSON response body.
+    # @return [Hash, Array, Object] The parsed JSON response.
     def post(path, params={})
       request(:post, path, params)
     end
 
-    # Internal: Perform an HTTP PUT request.
+    # Perform an HTTP PUT request
     #
-    # path    - The String path for the request
-    # params  - A Hash of params to put in the body of the request. (default:
-    #           {})
+    # @param [String] path The path to request.
+    # @param [Hash] The parameters to put in the body of the request.
     #
-    # Returns the parsed JSON response body.
+    # @return [Hash, Array, Object] The parsed JSON response.
     def put(path, params={})
       request(:put, path, params)
     end
 
-    # Internal: Perform an HTTP request.
+    # Perform an HTTP request
     #
-    # method  - The HTTP method to send as a Symbol (supports :delete, :get,
-    #           :put and :post).
-    # path    - The String path for the request.
-    # params  - A Hash of params to put in the query part of the URL (for
-    #           DELETE and GET requests) or in the body of the request (for
-    #           POST and PUT requests).
+    # @param [:delete, :get, :put, :post] method The HTTP method to send.
+    # @param [String] path The path to request.
+    # @param [Hash] The parameters to put in the query part of the URL (for
+    #   DELETE and GET requests) or in the body of the request (for POST and PUT
+    #   requests).
     #
-    # Returns the parsed JSON response body.
+    # @return [Hash, Array, Object] The parsed JSON response.
     def request(method, path, params)
       response = connection.send(method) do |request|
         case method.to_sym

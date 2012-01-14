@@ -1,15 +1,20 @@
+# encoding: utf-8
+
 module ContextIO
-  # Public: Custom error class for rescuing from all ContextIO errors
+  # Base class for ContextIO exceptions.
+  #
+  # @api public
   class Error < StandardError
-    # Public: The HTTP headers in the response.
+    # @return [Hash{String => String}] The HTTP headers of the response.
     attr_reader :http_headers
 
-    # Internal: Initializes a new Error object
+    # Initialize a new ContextIO error
     #
-    # message      - The String message.
-    # http_headers - A Hash containing all the HTTP headers.
+    # @api private
+    # @private
     #
-    # Returns a ContextIO::Error instance.
+    # @param [String] message The error message.
+    # @param [Hash{String => String}] http_headers The HTTP headers.
     def initialize(message, http_headers)
       @http_headers = Hash[http_headers]
       super(message)

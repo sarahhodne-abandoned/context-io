@@ -3,13 +3,15 @@ require 'multi_json'
 
 module ContextIO
   module Response
-    # Internal: Faraday middleware for parsing JSON in the response.
+    # Faraday middleware for parsing JSON in the response body
+    #
+    # @api private
     class ParseJson < Faraday::Response::Middleware
-      # Internal: Parse the body into JSON.
+      # Parse the response body into JSON
       #
-      # body - The String-like body containing JSON data.
+      # @param [#to_s] The response body, containing JSON data.
       #
-      # Returns the parsed JSON data, probably an Array or a Hash.
+      # @return [Object] The parsed JSON data, probably an Array or a Hash.
       def parse(body)
         case body
         when ''

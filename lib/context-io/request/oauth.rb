@@ -3,14 +3,15 @@ require 'simple_oauth'
 
 module ContextIO
   module Request
-    # Internal: Faraday middleware for handling the OAuth header.
+    # Faraday middleware for handling the OAuth header
+    #
+    # @api private
     class ContextIOOAuth < Faraday::Middleware
-      # Internal: Add the OAuth header before passing the request on to the next
-      # middleware.
+      # Add the OAuth header
       #
-      # env - The Rack environment.
+      # @param [Hash] env The Rack environment
       #
-      # Returns the Rack response from the middleware or app after this.
+      # @return [Array] The Rack response
       def call(env)
         params = env[:body] || {}
         signature_params = params
@@ -23,15 +24,17 @@ module ContextIO
         @app.call(env)
       end
 
-      # Public: Initialize the OAuth middleware.
+      # Initialize the OAuth middleware
       #
-      # app     - The Rack app or middleware to call after this one.
-      # options - The Hash authentication options to be used for OAuth
-      #           authentication:
-      #           :consumer_key    - The String OAuth consumer key
-      #           :consumer_secret - The String OAuth consumer secret
-      #           :token           - Should be nil
-      #           :token_secret    - Should be nil
+      # @param [#call] The next Rack middleware of app to call.
+      # @param [Hash] options The authentication options to use for OAuth
+      #   authentication.
+      # @option options [String] :consumer_key The OAuth consumer key
+      # @option options [String] :consumer_secret The OAuth consumer secret
+      # @option options [nil] :token The OAuth token, should be nil since
+      #   Context.IO doesn't support three-legged authentication.
+      # @option options [nil] :token_secret The Oauth token secret, should be
+      #   nil since Context.IO doesn't support three-legged authentication.
       def initialize(app, options)
         @app, @options = app, options
       end
