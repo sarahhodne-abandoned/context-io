@@ -21,6 +21,13 @@ module ContextIO
       end
     end
 
+    def self.find(account, message_id)
+      return nil if account.nil? or message_id.nil?
+      account_id = account.is_a?(Account) ? account.id : account.to_s
+
+      Message.from_json(account_id, get("/2.0/accounts/#{account_id}/messages/#{message_id}"))
+    end
+
     # Internal: Create an Message instance from the JSON returned by the
     # Context.IO server.
     #

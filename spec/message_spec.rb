@@ -108,4 +108,23 @@ describe ContextIO::Message do
       end
     end
   end
+
+  describe '.find' do
+    before(:each) do
+      @json_messages = JSON.parse(File.read(File.join(@fixtures_path, "messages.json")))
+      @find_url = "#{@messages_url}/#{@json_messages.first['message_id']}"
+      @response = stub_request(:get, @find_url).to_return(:body => @json_messages.first.to_json)
+    end
+
+    it 'calls API method' do
+      ContextIO::Message.find(@account, @json_messages.first["message_id"])
+      @response.should have_been_requested
+    end
+    
+    it 'returns single message for given ID' do
+      msg = ContextIO::Message.find(@account, @json_messages.first["message_id"])
+      msg.should be_a(ContextIO::Message)
+      msg.message_id.should == @json_messages.first["message_id"]
+    end
+  end
 end
