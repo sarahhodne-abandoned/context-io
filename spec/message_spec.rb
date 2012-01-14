@@ -77,6 +77,27 @@ describe ContextIO::Message do
       flags.first.should == "\\Seen"
     end
   end
+
+  describe 'thread' do
+    before(:each) do
+      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
+      thread_messages = "{\"messages\": #{json_messages}}"
+      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+      msg_id = '4f0f1c533f757e0f3c00000b'
+      @thread_response = stub_request(:get, "#{@messages_url}/#{msg_id}/thread").to_return(:body => thread_messages)
+    end
+
+    it 'returns array of Message objects' do
+      thread = ContextIO::Message.all(@account).first.thread
+      thread.should be_a(Array)
+      thread.first.should be_a(ContextIO::Message)
+    end
+
+    it 'calls API method' do
+      ContextIO::Message.all(@account).first.thread
+      @thread_response.should have_been_requested
+    end
+  end
   
   describe 'body and headers lazy loading' do
     before(:each) do

@@ -83,6 +83,13 @@ module ContextIO
       get("#{url}/flags")
     end
 
+    # Public: Returns array of messages of the thread a given message is in.
+    def thread
+      get("#{url}/thread")["messages"].map do |m|
+        Message.from_json(account_id, m)
+      end
+    end
+
     private
     def url
       "/2.0/accounts/#{account_id}/messages/#{message_id}"
