@@ -80,14 +80,11 @@ describe ContextIO::Message do
   
   describe 'body and headers lazy loading' do
     before(:each) do
-      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
-      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
-    end
-    
-    before(:each) do
       msg_id = '4f0f1c533f757e0f3c00000b'
       body = "[{\"type\":\"text/plain\",\"content\":\"Just a message\"},{\"type\":\"text/html\",\"content\":\"<html><p>Just a message</p></html>\"}]"
       headers = "{\"Received\":\"by 10.10.1.1\"}"
+      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
+      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
       @body_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/body").to_return(:body => body)
       @headers_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/headers").to_return(:body => headers)
     end
