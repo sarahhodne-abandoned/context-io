@@ -9,15 +9,15 @@ describe ContextIO::Message do
       @id = account_id
     end
     @messages_url = "https://api.context.io/2.0/accounts/#{account_id}/messages"
-    
+
   end
-  
+
   describe ".all" do
     before(:each) do
       json_messages = File.read(File.join(@fixtures_path, "messages.json"))
       @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
     end
-    
+
     it 'retunrs an array of Message objects for given account ID' do
       messages = ContextIO::Message.all(@account.id)
       messages.should be_a(Array)
@@ -57,7 +57,7 @@ describe ContextIO::Message do
         :limit => '30',
         :offset => '30'
       }
-      
+
       @response = @response.with(:query => q)
 
       ContextIO::Message.all(@account, q)
@@ -70,7 +70,7 @@ describe ContextIO::Message do
       json_messages = File.read(File.join(@fixtures_path, "messages.json"))
       @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
     end
-    
+
     it 'retrieves flags' do
       msg_id = '4f0f1c533f757e0f3c00000b'
       flags_response = stub_request(:get, "#{@messages_url}/#{msg_id}/flags").to_return(:body => ["\\Seen"].to_json)
@@ -100,7 +100,7 @@ describe ContextIO::Message do
       @thread_response.should have_been_requested
     end
   end
-  
+
   describe 'body and headers lazy loading' do
     before(:each) do
       msg_id = '4f0f1c533f757e0f3c00000b'
@@ -111,7 +111,7 @@ describe ContextIO::Message do
       @body_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/body").to_return(:body => body)
       @headers_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/headers").to_return(:body => headers)
     end
-    
+
     it 'requests body on first access' do
       msg = ContextIO::Message.all(@account).first
       msg.body.should == "Just a message"
@@ -125,7 +125,7 @@ describe ContextIO::Message do
       msg.body
       @body_resp.should have_been_made.once
     end
-    
+
     it 'requests headers' do
       msg = ContextIO::Message.all(@account).first
       msg.headers.should be_a(Hash)
@@ -152,7 +152,7 @@ describe ContextIO::Message do
       ContextIO::Message.find(@account, @json_messages.first["message_id"])
       @response.should have_been_requested
     end
-    
+
     it 'returns single message for given ID' do
       msg = ContextIO::Message.find(@account, @json_messages.first["message_id"])
       msg.should be_a(ContextIO::Message)
