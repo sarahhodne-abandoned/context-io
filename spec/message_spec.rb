@@ -61,7 +61,14 @@ describe ContextIO::Message do
       ContextIO::Message.all(@account, q)
       @response.should have_been_requested
     end
+  end
 
+  describe 'message flags' do
+    before(:each) do
+      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
+      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+    end
+    
     it 'retrieves flags' do
       msg_id = '4f0f1c533f757e0f3c00000b'
       flags_response = stub_request(:get, "#{@messages_url}/#{msg_id}/flags").to_return(:body => ["\\Seen"].to_json)
@@ -69,43 +76,48 @@ describe ContextIO::Message do
       flags.should be_a(Array)
       flags.first.should == "\\Seen"
     end
+  end
+  
+  describe 'body and headers lazy loading' do
+    before(:each) do
+      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
+      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+    end
     
-    context 'body and headers lazy loading' do
-      before(:each) do
-        msg_id = '4f0f1c533f757e0f3c00000b'
-        body = "[{\"type\":\"text/plain\",\"content\":\"Just a message\"},{\"type\":\"text/html\",\"content\":\"<html><p>Just a message</p></html>\"}]"
-        headers = "{\"Received\":\"by 10.10.1.1\"}"
-        @body_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/body").to_return(:body => body)
-        @headers_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/headers").to_return(:body => headers)
-      end
-      
-      it 'requests body' do
-        msg = ContextIO::Message.all(@account).first
-        msg.body.should == "Just a message"
-        msg.body("html").start_with?("<html>").should be_true
-        @body_resp.should have_been_requested
-      end
+    before(:each) do
+      msg_id = '4f0f1c533f757e0f3c00000b'
+      body = "[{\"type\":\"text/plain\",\"content\":\"Just a message\"},{\"type\":\"text/html\",\"content\":\"<html><p>Just a message</p></html>\"}]"
+      headers = "{\"Received\":\"by 10.10.1.1\"}"
+      @body_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/body").to_return(:body => body)
+      @headers_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/headers").to_return(:body => headers)
+    end
+    
+    it 'requests body on first access' do
+      msg = ContextIO::Message.all(@account).first
+      msg.body.should == "Just a message"
+      msg.body("html").start_with?("<html>").should be_true
+      @body_resp.should have_been_requested
+    end
 
-      it 'does not request body on second request' do
-        msg = ContextIO::Message.all(@account).first
-        msg.body
-        msg.body
-        @body_resp.should have_been_made.once
-      end
-      
-      it 'requests headers' do
-        msg = ContextIO::Message.all(@account).first
-        msg.headers.should be_a(Hash)
-        msg.headers["Received"].should == "by 10.10.1.1"
-        @headers_resp.should have_been_requested
-      end
+    it 'does not request body on second request' do
+      msg = ContextIO::Message.all(@account).first
+      msg.body
+      msg.body
+      @body_resp.should have_been_made.once
+    end
+    
+    it 'requests headers' do
+      msg = ContextIO::Message.all(@account).first
+      msg.headers.should be_a(Hash)
+      msg.headers["Received"].should == "by 10.10.1.1"
+      @headers_resp.should have_been_requested
+    end
 
-      it 'does not request headers on second request' do
-        msg = ContextIO::Message.all(@account).first
-        msg.headers
-        msg.headers
-        @headers_resp.should have_been_made.once
-      end
+    it 'does not request headers on second request' do
+      msg = ContextIO::Message.all(@account).first
+      msg.headers
+      msg.headers
+      @headers_resp.should have_been_made.once
     end
   end
 
