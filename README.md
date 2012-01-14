@@ -1,6 +1,8 @@
 ContextIO - Extract data from email
 ===================================
 
+[![Build Status](https://secure.travis-ci.org/dvyjones/context-io.png)](http://travis-ci.org/dvyjones/context-io)
+
 ## DESCRIPTION
 
 ContextIO is a Ruby wrapper for the [Context.IO][contextio] web service.
