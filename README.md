@@ -2,6 +2,7 @@ ContextIO - Extract data from email
 ===================================
 
 [![Build Status](https://secure.travis-ci.org/dvyjones/context-io.png)](http://travis-ci.org/dvyjones/context-io)
+[![Dependency Status](https://gemnasium.com/dvyjones/context-io.png)](https://gemnasium.com/dvyjones/context-io)
 
 ## DESCRIPTION
 
