@@ -18,13 +18,13 @@ describe ContextIO::Message do
       @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
     end
 
-    it 'retunrs an array of Message objects for given account ID' do
+    it 'returns an array of Message objects for given account ID' do
       messages = ContextIO::Message.all(@account.id)
       messages.should be_a(Array)
       messages.first.should be_a(ContextIO::Message)
     end
 
-    it 'retunrs an array of Message objects for given Account object' do
+    it 'returns an array of Message objects for given Account object' do
       messages = ContextIO::Message.all(@account)
       messages.should be_a(Array)
       messages.first.should be_a(ContextIO::Message)
