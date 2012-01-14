@@ -2,16 +2,20 @@ require "spec_helper"
 
 describe ContextIO::Message do
   before(:each) do
-    fixtures_path = File.expand_path(File.join(File.dirname(__FILE__), "fixtures"))
-    json_messages = File.read(File.join(fixtures_path, "messages.json"))
+    @fixtures_path = File.expand_path(File.join(File.dirname(__FILE__), "fixtures"))
     @account_id = 5
     @account = ContextIO::Account.new
     @account.id = @account_id
     @messages_url = "https://api.context.io/2.0/accounts/#{@account_id}/messages"
-    @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+    
   end
   
   describe ".all" do
+    before(:each) do
+      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
+      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+    end
+    
     it 'retunrs an array of Message objects for given account ID' do
       messages = ContextIO::Message.all(@account.id)
       messages.should be_a(Array)
