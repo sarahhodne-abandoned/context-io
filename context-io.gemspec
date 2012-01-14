@@ -25,6 +25,10 @@ Gem::Specification.new do |s|
   s.add_dependency('multi_json', '~> 1.0.0')
   s.add_dependency('webmock', '~> 1.7.10')
 
+  if RUBY_PLATFORM == 'java'
+    s.add_dependency('jruby-openssl', '>= 0')
+  end
+
   s.add_development_dependency('rspec', '~> 2.8.0')
   s.add_development_dependency('rake', '~> 0.9.0')
   s.add_development_dependency('rdoc', '~> 3.10')
