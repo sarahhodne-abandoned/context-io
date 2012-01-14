@@ -1,8 +1,8 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe ContextIO::Message do
   before(:each) do
-    @fixtures_path = File.expand_path(File.join(File.dirname(__FILE__), "fixtures"))
+    @fixtures_path = File.expand_path(File.join(File.dirname(__FILE__), 'fixtures'))
     account_id = 'abcdef1234567890'
     @account = ContextIO::Account.new
     @account.instance_eval do
@@ -12,10 +12,11 @@ describe ContextIO::Message do
 
   end
 
-  describe ".all" do
+  describe '.all' do
     before(:each) do
-      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
-      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+      json_messages = File.read(File.join(@fixtures_path, 'messages.json'))
+      @response = stub_request(:get, @messages_url).
+        to_return(:body => json_messages)
     end
 
     it 'returns an array of Message objects for given account ID' do
@@ -45,15 +46,15 @@ describe ContextIO::Message do
       msg = ContextIO::Message.all(@account).first
       msg.message_id.should == '4f0f1c533f757e0f3c00000b'
       msg.subject.should == 'Get Gmail on your mobile phone'
-      msg.from["name"].should == "Gmail Team"
+      msg.from['name'].should == 'Gmail Team'
       msg.to.length.should == 1
     end
 
     it 'sends query' do
       q = {
-        :subject => "Some subject",
-        :email => "james@example.net",
-        :to => "james@example.com",
+        :subject => 'Some subject',
+        :email => 'james@example.net',
+        :to => 'james@example.com',
         :limit => '30',
         :offset => '30'
       }
@@ -67,26 +68,29 @@ describe ContextIO::Message do
 
   describe 'message flags' do
     before(:each) do
-      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
-      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+      json_messages = File.read(File.join(@fixtures_path, 'messages.json'))
+      @response = stub_request(:get, @messages_url).
+        to_return(:body => json_messages)
     end
 
     it 'retrieves flags' do
       msg_id = '4f0f1c533f757e0f3c00000b'
-      flags_response = stub_request(:get, "#{@messages_url}/#{msg_id}/flags").to_return(:body => ["\\Seen"].to_json)
+      flags_response = stub_request(:get, "#{@messages_url}/#{msg_id}/flags").
+        to_return(:body => ['\\Seen'].to_json)
       flags = ContextIO::Message.all(@account).first.flags
       flags.should be_a(Array)
-      flags.first.should == "\\Seen"
+      flags.first.should == '\\Seen'
     end
   end
 
   describe 'thread' do
     before(:each) do
-      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
+      json_messages = File.read(File.join(@fixtures_path, 'messages.json'))
       thread_messages = "{\"messages\": #{json_messages}}"
-      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
+      stub_request(:get, @messages_url).to_return(:body => json_messages)
       msg_id = '4f0f1c533f757e0f3c00000b'
-      @thread_response = stub_request(:get, "#{@messages_url}/#{msg_id}/thread").to_return(:body => thread_messages)
+      @response = stub_request(:get, "#{@messages_url}/#{msg_id}/thread").
+        to_return(:body => thread_messages)
     end
 
     it 'returns array of Message objects' do
@@ -97,25 +101,36 @@ describe ContextIO::Message do
 
     it 'calls API method' do
       ContextIO::Message.all(@account).first.thread
-      @thread_response.should have_been_requested
+      @response.should have_been_requested
     end
   end
 
   describe 'body and headers lazy loading' do
     before(:each) do
       msg_id = '4f0f1c533f757e0f3c00000b'
-      body = "[{\"type\":\"text/plain\",\"content\":\"Just a message\"},{\"type\":\"text/html\",\"content\":\"<html><p>Just a message</p></html>\"}]"
-      headers = "{\"Received\":\"by 10.10.1.1\"}"
-      json_messages = File.read(File.join(@fixtures_path, "messages.json"))
-      @response = stub_request(:get, @messages_url).to_return(:body => json_messages)
-      @body_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/body").to_return(:body => body)
-      @headers_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/headers").to_return(:body => headers)
+      body = '[
+        {
+          "type": "text/plain",
+          "content":"Just a message"
+        },
+        {
+          "type": "text/html",
+          "content": "<html><p>Just a message</p></html>"
+        }]'
+      headers = '{"Received":"by 10.10.1.1"}'
+      json_messages = File.read(File.join(@fixtures_path, 'messages.json'))
+      stub_request(:get, @messages_url).
+        to_return(:body => json_messages)
+      @body_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/body").
+        to_return(:body => body)
+      @headers_resp = stub_request(:get, "#{@messages_url}/#{msg_id}/headers").
+        to_return(:body => headers)
     end
 
     it 'requests body on first access' do
       msg = ContextIO::Message.all(@account).first
-      msg.body.should == "Just a message"
-      msg.body("html").start_with?("<html>").should be_true
+      msg.body.should == 'Just a message'
+      msg.body('html').start_with?('<html>').should be_true
       @body_resp.should have_been_requested
     end
 
@@ -129,7 +144,7 @@ describe ContextIO::Message do
     it 'requests headers' do
       msg = ContextIO::Message.all(@account).first
       msg.headers.should be_a(Hash)
-      msg.headers["Received"].should == "by 10.10.1.1"
+      msg.headers['Received'].should == 'by 10.10.1.1'
       @headers_resp.should have_been_requested
     end
 
@@ -143,20 +158,21 @@ describe ContextIO::Message do
 
   describe '.find' do
     before(:each) do
-      @json_messages = JSON.parse(File.read(File.join(@fixtures_path, "messages.json")))
-      @find_url = "#{@messages_url}/#{@json_messages.first['message_id']}"
-      @response = stub_request(:get, @find_url).to_return(:body => @json_messages.first.to_json)
+      @messages = JSON.parse(File.read(File.join(@fixtures_path, 'messages.json')))
+      @find_url = "#{@messages_url}/#{@messages.first['message_id']}"
+      @response = stub_request(:get, @find_url).
+        to_return(:body => @messages.first.to_json)
     end
 
     it 'calls API method' do
-      ContextIO::Message.find(@account, @json_messages.first["message_id"])
+      ContextIO::Message.find(@account, @messages.first['message_id'])
       @response.should have_been_requested
     end
 
     it 'returns single message for given ID' do
-      msg = ContextIO::Message.find(@account, @json_messages.first["message_id"])
+      msg = ContextIO::Message.find(@account, @messages.first['message_id'])
       msg.should be_a(ContextIO::Message)
-      msg.message_id.should == @json_messages.first["message_id"]
+      msg.message_id.should == @messages.first['message_id']
     end
   end
 end
