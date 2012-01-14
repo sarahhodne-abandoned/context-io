@@ -3,10 +3,12 @@ require "spec_helper"
 describe ContextIO::Message do
   before(:each) do
     @fixtures_path = File.expand_path(File.join(File.dirname(__FILE__), "fixtures"))
-    @account_id = 5
+    account_id = 'abcdef1234567890'
     @account = ContextIO::Account.new
-    @account.id = @account_id
-    @messages_url = "https://api.context.io/2.0/accounts/#{@account_id}/messages"
+    @account.instance_eval do
+      @id = account_id
+    end
+    @messages_url = "https://api.context.io/2.0/accounts/#{account_id}/messages"
     
   end
   
