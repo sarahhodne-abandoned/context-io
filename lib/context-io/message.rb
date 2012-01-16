@@ -90,9 +90,26 @@ module ContextIO
       end
     end
 
+    def copy(folder_name, destination_source = nil)
+      copy_move(folder_name, 0, destination_source)
+    end
+
+    def move(folder_name, destination_source = nil)
+      copy_move(folder_name, 1, destination_source)
+    end
+      
     private
     def url
       "/2.0/accounts/#{account_id}/messages/#{message_id}"
+    end
+
+    def copy_move(folder_name, move, destination_source)
+      raise ArgumentError.new("Valid values for 'move' flag are 1 and 0") unless [0, 1].include? move.to_i
+      destination = folder_name.to_s
+      raise ArgumentError.new("Destination folder cannot be empty") if destination.empty?
+      options = {:dst_folder => destination, :move => move.to_i.to_s}
+      options[:dst_source] = destination_source if destination_source
+      post(url, options)
     end
   end
 end
