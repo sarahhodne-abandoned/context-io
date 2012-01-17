@@ -47,7 +47,7 @@ module ContextIO
       # @return [String] The error message if one is defines, or an empty
       #   string.
       def error_body(body)
-        if body['type'] == 'error' && body['value']
+        if body && body['type'] == 'error' && body['value']
           body['value']
         else
           ''
