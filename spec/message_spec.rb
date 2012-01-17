@@ -156,17 +156,14 @@ describe ContextIO::Message do
     end
   end
 
-  describe "copy and move" do
+  describe "copy" do
     before(:each) do
       msgs = MultiJson.decode(File.read(File.join(@fixtures_path, 'messages.json')))
       @message = ContextIO::Message.from_json(@account.id, msgs.first)
       copy_options = {:dst_folder => "Important", :move => '0'}
-      move_options = {:dst_folder => "Important", :move => '1'}
       copy_to_source = {:dst_folder => "Important", :dst_source => "Other Source", :move => '0'}
       @copy_response = stub_request(:post, "#{@messages_url}/#{@message.message_id}").
         with(:body => copy_options)
-      @move_response = stub_request(:post, "#{@messages_url}/#{@message.message_id}").
-        with(:body => move_options)
       @copy_to_source_response = stub_request(:post, "#{@messages_url}/#{@message.message_id}").
         with(:body => copy_to_source)
     end
@@ -180,14 +177,28 @@ describe ContextIO::Message do
       @copy_response.should have_been_requested
     end
 
-    it "move calls API method with move options" do
-      @message.move("Important")
-      @move_response.should have_been_requested
-    end
-
     it "copy to source calls API method with source in post arguments" do
       @message.copy("Important", "Other Source")
       @copy_to_source_response.should have_been_requested
+    end
+  end
+
+  describe "move" do
+    before(:each) do
+      msgs = MultiJson.decode(File.read(File.join(@fixtures_path, 'messages.json')))
+      @message = ContextIO::Message.from_json(@account.id, msgs.first)
+      move_options = {:dst_folder => "Important", :move => '1'}
+      @move_response = stub_request(:post, "#{@messages_url}/#{@message.message_id}").
+        with(:body => move_options)
+    end
+
+    it 'raises ArgumentError for empty target folder' do
+      lambda { @message.move(nil) }.should raise_error ArgumentError
+    end
+
+    it "move calls API method with move options" do
+      @message.move("Important")
+      @move_response.should have_been_requested
     end
   end
   
