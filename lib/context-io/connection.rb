@@ -28,8 +28,8 @@ module ContextIO
         :url => 'https://api.context.io'
       }
       Faraday.new(default_options.deep_merge(ContextIO.connection_options)) do |builder|
-        builder.use Faraday::Request::UrlEncoded
         builder.use ContextIO::Request::ContextIOOAuth, ContextIO.authentication if ContextIO.authenticated?
+        builder.use Faraday::Request::UrlEncoded
         builder.use ContextIO::Response::RaiseClientError
         builder.use ContextIO::Response::ParseJson
         builder.use ContextIO::Response::RaiseServerError
