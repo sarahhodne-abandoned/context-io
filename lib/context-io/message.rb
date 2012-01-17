@@ -91,11 +91,11 @@ module ContextIO
     end
 
     def copy(folder_name, destination_source = nil)
-      copy_move(folder_name, 0, destination_source)
+      copy_move(folder_name, false, destination_source)
     end
 
     def move(folder_name, destination_source = nil)
-      copy_move(folder_name, 1, destination_source)
+      copy_move(folder_name, true, destination_source)
     end
       
     private
@@ -104,10 +104,10 @@ module ContextIO
     end
 
     def copy_move(folder_name, move, destination_source)
-      raise ArgumentError.new("Valid values for 'move' flag are 1 and 0") unless [0, 1].include? move.to_i
+      raise ArgumentError.new("Valid values for 'move' flag are 1 and 0") unless [true, false].include? move
       destination = folder_name.to_s
       raise ArgumentError.new("Destination folder cannot be empty") if destination.empty?
-      options = {:dst_folder => destination, :move => move.to_i.to_s}
+      options = {:dst_folder => destination, :move => move ? 1 :0}
       options[:dst_source] = destination_source if destination_source
       post(url, options)
     end
