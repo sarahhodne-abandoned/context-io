@@ -244,7 +244,7 @@ module ContextIO
           @password_expired = json['password_expired']
         end
         @sources = json['sources'].map do |source|
-          Source.from_json(source)
+          Source.from_json(@id, source)
         end
       end
 
