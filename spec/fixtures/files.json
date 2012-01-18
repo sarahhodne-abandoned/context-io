@@ -1,0 +1,41 @@
+[
+  {
+    "size": 123456,
+    "type": "application/octet-stream",
+    "subject": "A subject",
+    "date": 1234567890,
+    "addresses": {
+      "from": {
+        "email": "you@example.com"
+      },
+      "to": [{
+        "email": "me@example.com"
+      }]
+    },
+    "file_name": "a_file.pdf",
+    "body_section": 3,
+    "file_id": "0987654321abcdef",
+    "supports_preview": true,
+    "message_id": "0987654321fedcba",
+    "date_indexed": 1234567900,
+    "email_message_id": "<0192837465ABCDEFABCDEF@ABCDEFGHIJK>",
+    "person_info": {
+      "you@example.com": {
+        "thumbnail": "http://example.com/you.png"
+      },
+      "me@example.com": {
+        "thumbnail": "http://example.com/me.com"
+      }
+    },
+    "file_name_structure": [
+      [
+        "a_file",
+        "main"
+      ],
+      [
+        ".pdf",
+        "ext"
+      ]
+    ]
+  }
+]
