@@ -55,9 +55,9 @@ module ContextIO
     def request(method, path, params)
       response = connection.send(method) do |request|
         case method.to_sym
-        when :delete, :get
+        when :delete, :get, :put
           request.url(path, params)
-        when :post, :put
+        when :post
           request.path = path
           request.body = params unless params.empty?
         end
