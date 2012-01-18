@@ -173,7 +173,7 @@ describe ContextIO::Account do
       it 'calls the API request' do
         @stub = stub_request(:put,
           'https://api.context.io/2.0/accounts/1234567890abcdef').
-          with(:body => { :first_name => 'John' }).
+          with(:query => { :first_name => 'John' }).
           to_return(
           :body => '{
             "success": true
@@ -192,7 +192,7 @@ describe ContextIO::Account do
     it 'calls the API request' do
       @stub = stub_request(:put,
         'https://api.context.io/2.0/accounts/1234567890abcdef').
-        with(:body => { :first_name => 'John' }).
+        with(:query => { :first_name => 'John' }).
         to_return(
         :body => '{
           "success": true
@@ -206,6 +206,7 @@ describe ContextIO::Account do
 
     it 'returns true if the update was successful' do
       stub_request(:put, 'https://api.context.io/2.0/accounts/1234567890abcdef').
+        with(:query => { :first_name => 'John' }).
         to_return(
         :body => '{
           "success": true
@@ -217,6 +218,7 @@ describe ContextIO::Account do
 
     it 'returns false if the update was unsuccessful' do
       stub_request(:put, 'https://api.context.io/2.0/accounts/1234567890abcdef').
+        with(:query => { :first_name => 'John' }).
         to_return(
         :body => '{
           "success": false
@@ -229,6 +231,7 @@ describe ContextIO::Account do
 
     it 'sets the attributes on the account object' do
       stub_request(:put, 'https://api.context.io/2.0/accounts/1234567890abcdef').
+        with(:query => { :first_name => 'John' }).
         to_return(
         :body => '{
           "success": true
