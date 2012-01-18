@@ -1,6 +1,7 @@
 require 'context-io/config'
 require 'context-io/authentication'
 require 'context-io/account'
+require 'context-io/file'
 require 'context-io/source'
 require 'context-io/message'
 
