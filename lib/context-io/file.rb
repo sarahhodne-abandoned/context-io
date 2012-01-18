@@ -5,6 +5,64 @@ module ContextIO
   #
   # @api public
   class File < Resource
+    # @api public
+    # @return [String] The ID of the file
+    attr_reader :id
+
+    # @api public
+    # @return [Integer] The size of the file, in bytes.
+    attr_reader :size
+
+    # @api public
+    # @return [String] The MIME type of the file.
+    attr_reader :type
+
+    # @api public
+    # @return [String] The subject of the message this file was attached to
+    attr_reader :subject
+
+    # @api public
+    # @return [Time] When this file was sent
+    attr_reader :date
+
+    # @api public
+    # @return [Hash] Information on the different addresses attached to this
+    #   file's message.
+    attr_reader :addresses
+
+    # @api public
+    # @return [String] The full filename
+    attr_reader :file_name
+
+    # @api public
+    # @return [Integer]
+    attr_reader :body_section
+
+    # @api public
+    # @return [true, false] Whether the file supports preview
+    attr_reader :supports_preview
+
+    # @api public
+    # @return [String] The (Context.IO) ID of the message this file was attached to
+    attr_reader :message_id
+
+    # @api public
+    # @return [Time] When Context.IO indexed the file (not the same as when it
+    #   was sent)
+    attr_reader :date_indexed
+
+    # @api public
+    # @return [String] The email message ID (The Message-ID header)
+    attr_reader :email_message_id
+
+    # @api public
+    # @return [Hash] Information about the people involved with the message
+    attr_reader :person_info
+
+    # @api public
+    # @return [Array] The file name split up into parts
+    attr_reader :file_name_structure
+
     # Get all files for a given account, optionally filtered with a query
     #
     # @see Account#messages
@@ -111,6 +169,45 @@ module ContextIO
     def self.from_json(json)
       account = new
       account.instance_eval do
+        @id = json['file_id']
+        @size = json['size']
+        @type = json['type']
+        @subject = json['subject']
+        @date = Time.at(json['date'])
+        @addresses = {}
+        json['addresses'].each do |type, info|
+          @addresses[type.to_sym] = {}
+          if info.is_a?(Hash)
+            info.each do |key, value|
+              @addresses[type.to_sym][key.to_sym] = value
+            end
+          elsif info.is_a?(Array)
+            @addresses[type.to_sym] = []
+            info.each do |email_info|
+              @addresses[type.to_sym] << {}
+              email_info.each do |key, value|
+                @addresses[type.to_sym].last[key.to_sym] = value
+              end
+            end
+          end
+        end
+        @file_name = json['file_name']
+        @body_section = json['body_section']
+        @supports_preview = json['supports_preview']
+        @message_id = json['message_id']
+        @date_indexed = Time.at(json['date_indexed'])
+        @email_message_id = json['email_message_id']
+        @person_info = {}
+        json['person_info'].each do |email, info|
+          @person_info[email] = {}
+          info.each do |key, value|
+            @person_info[email][key.to_sym] = value
+          end
+        end
+        @file_name_structure = []
+        json['file_name_structure'].each do |part|
+          @file_name_structure << [part.first, part.last.to_sym]
+        end
       end
 
       account
