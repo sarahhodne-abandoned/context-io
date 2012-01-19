@@ -9,6 +9,9 @@ describe ContextIO::Source do
       @id = account_id
     end
     @sources_url = "https://api.context.io/2.0/accounts/#{account_id}/sources"
+    @existing_src = ContextIO::Source.new(@account.id, {'label' => 'me.example.com::imap.example.com',
+        'email' => 'me@example.com', 'server' => 'imap.example.com',
+        'username' => "me", 'use_ssl' => true, 'port' => '', 'type' => 'IMAP'})
   end
 
   describe ".new" do
@@ -66,7 +69,7 @@ describe ContextIO::Source do
       src.service_level.should == 'pro'
       src.username.should == 'bi@example.com'
       src.server.should == 'imap.example.com'
-      src.type.should == 'imap'
+      src.source_type.should == 'imap'
       src.sync_period.should == '1d'
       src.use_ssl.should be_true
       src.status.should == 'OK'
@@ -102,6 +105,144 @@ describe ContextIO::Source do
       src = ContextIO::Source.find(@account, @sources.first['label'])
       src.should be_a(ContextIO::Source)
       src.label.should == @sources.first['label']
+    end
+  end
+
+  describe '#save' do
+    it 'returns true if the save was successful' do
+      @stub = stub_request(:post, "https://api.context.io/2.0/accounts/#{@account.id}/sources").
+        with(:body => { :email => 'me@example.com', :server => 'imap@example.com',
+        :username => "me", :use_ssl => 'true', :port => '143', :type => 'IMAP'}).
+        to_return(
+        :body => '{
+          "success": true
+        }'
+      )
+
+      src = ContextIO::Source.new(@account.id, {'email' => 'me@example.com', 'server' => 'imap@example.com',
+          'username' => "me", 'use_ssl' => true, 'port' => 143, 'type' => 'IMAP'})
+
+      src.save.should be_true
+    end
+
+    it 'returns false if the save was not successful' do
+      @stub = stub_request(:post, "https://api.context.io/2.0/accounts/#{@account.id}/sources").
+        with(:body => { :email => 'me@example.com', :server => 'imap@example.com',
+        :username => "me", :use_ssl => 'true', :port => '143', :type => 'IMAP'}).
+        to_return(
+        :body => '{
+          "success": false
+        }'
+      )
+
+      src = ContextIO::Source.new(@account.id, {'email' => 'me@example.com', 'server' => 'imap@example.com',
+          'username' => "me", 'use_ssl' => true, 'port' => 143, 'type' => 'IMAP'})
+
+      src.save.should be_false
+    end
+
+    it 'raises ArgumentError if mandatory arguments are missing' do
+      src = ContextIO::Source.new(@account.id, {'email' => '', 'server' => 'imap@example.com',
+          'username' => "me", 'use_ssl' => true, 'port' => '143', 'type' => 'IMAP'})
+      lambda { src.save }.should raise_error ArgumentError
+
+      src = ContextIO::Source.new(@account.id, {'email' => 'me@example.com', 'server' => '',
+          'username' => "me", 'use_ssl' => true, 'port' => '143', 'type' => 'IMAP'})
+      lambda { src.save }.should raise_error ArgumentError
+
+      src = ContextIO::Source.new(@account.id, {'email' => 'me@example.com', 'server' => '',
+          'username' => '', 'use_ssl' => true, 'port' => '143', 'type' => 'IMAP'})
+      lambda { src.save }.should raise_error ArgumentError
+
+      src = ContextIO::Source.new(@account.id, {'email' => 'me@example.com', 'server' => '',
+          'username' => "me", 'use_ssl' => true, 'port' => '', 'type' => 'IMAP'})
+      lambda { src.save }.should raise_error ArgumentError
+    end
+  end
+
+  describe '#update_attributes' do
+    it 'calls the API request' do
+      @stub = stub_request(:post, "#{@sources_url}/#{@existing_src.label}").
+        with(:body => { 'sync_period' => '1d' }).
+        to_return(
+        :body => '{
+          "success": true
+        }'
+      )
+
+      @existing_src.update_attributes("sync_period" => '1d')
+
+      @stub.should have_been_requested
+    end
+
+    it 'returns true if the update was successful' do
+      stub_request(:post, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": true}'
+      )
+
+      @existing_src.update_attributes('status' => 'OK').should be_true
+    end
+
+    it 'returns false if the update was unsuccessful' do
+      stub_request(:post, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": false}'
+      )
+
+      @existing_src.update_attributes('status' => 'OK').should be_false
+    end
+
+    it 'sets the attributes on the Source object' do
+      stub_request(:post, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": true}'
+      )
+
+      @existing_src.update_attributes('service_level' => 'test_level')
+
+      @existing_src.service_level.should == 'test_level'
+    end
+  end
+
+  describe "#destroy" do
+    it 'calls the API request' do
+      @stub = stub_request(:delete, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": true}'
+      )
+
+      @existing_src.destroy
+
+      @stub.should have_been_requested
+    end
+
+    it 'returns true if destroy is successful' do
+      stub_request(:delete, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": true}'
+      )
+
+      @existing_src.destroy.should be_true
+    end
+
+    it 'resets source label if destroy is successful' do
+      stub_request(:delete, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": true}'
+      )
+
+      @existing_src.destroy
+      @existing_src.label.should == ''
+    end
+
+    it 'returns false if destroy is not successful' do
+      stub_request(:delete, "#{@sources_url}/#{@existing_src.label}").
+        to_return(
+        :body => '{"success": false}'
+      )
+
+      @existing_src.destroy.should be_false
     end
   end
 end
