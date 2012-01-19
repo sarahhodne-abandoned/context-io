@@ -4,7 +4,7 @@ module ContextIO
   class Message < Resource
     attr_accessor :message_id, :account_id, :sources, :from, :to, :cc, :subject, :date, :folders, :files
     attr_reader :raw_data
-    
+
     # Public: Get all messages for given account.
     #
     # query - An optional Hash (default: {}) containing a query to filter the
@@ -14,7 +14,7 @@ module ContextIO
     # account - Account object or ID
     def self.all(account, query = {})
       return [] if account.nil?
-      
+
       account_id = account.is_a?(Account) ? account.id : account.to_s
       get("/2.0/accounts/#{account_id}/messages", query).map do |msg|
         Message.from_json(account_id, msg)
