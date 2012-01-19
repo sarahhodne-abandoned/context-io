@@ -9,6 +9,13 @@ module ContextIO
                   :server, :source_type, :sync_period, :use_ssl, :status
     attr_reader :account_id, :email
     
+    # Public: Get all sources for given account.
+    #
+    # query - An optional Hash (default: {}) containing a query to filter the
+    #         responses. For possible values see Context.IO API documentation.
+    # Returns an Array of Source objects.
+    #
+    # account - Account object or ID
     def self.all(account, query = {})
       return [] if account.nil?
       
@@ -18,6 +25,16 @@ module ContextIO
       end
     end
 
+    # Find a source for given ID
+    #
+    # @api public
+    #
+    # @param [String] label The label of the source to look up.
+    #
+    # @example Find the source with the labe 'foobar'
+    #   ContextIO::Source.find('abcdef012345', 'foobar')
+    #
+    # @return [Source] The source with the given label.
     def self.find(account, label)
       return nil if account.nil? or label.to_s.empty?
       account_id = account.is_a?(Account) ? account.id : account.to_s
@@ -58,10 +75,26 @@ module ContextIO
       @provider_consumer_key = attributes['provider_consumer_key']
     end
 
+    # Sends the source data to Context.IO
+    #
+    # If the source has been sent to Context.IO before, this will update
+    # allowed source attributes.
+    #
+    # @api public
+    #
+    # @raise [ArgumentError] If required arguments are missing.
+    #
+    # @example Create a source
+    #   source = ContextIO::Source.new(@account.id, {'email' => 'me@example.com', 'server' => 'imap@example.com',
+    #      'username' => "me", 'use_ssl' => true, 'port' => 143, 'type' => 'IMAP'})
+    #   source.save
+    #
+    # @return [true, false] Whether the save succeeded or not.
     def save
       @label.to_s.empty? ? create_record : update_record
     end
 
+    # Destroys current source object
     def destroy
       return false if @label.to_s.empty?
 
@@ -71,6 +104,18 @@ module ContextIO
       response['success']
     end
 
+    # Update attributes on the Source object and then send them to Context.IO
+    #
+    # @api public
+    #
+    # @param [Hash] attributes The attributes to update. Allowed
+    # attributes are status, sync period, service level, password,
+    # provider token, provider token secret and provider consumer key
+    #
+    # @example Update the Source sync period to one day
+    #   source.update_attributes('sync_period' => '1d')
+    #
+    # @return [true, false] Whether the update succeeded or not.
     def update_attributes(attributes = {})
       raise ArgumentError.new("Cannot set attributes on new record") if @label.to_s.empty?
       
@@ -83,7 +128,13 @@ module ContextIO
     end
 
     private
-    def create_record
+
+    # Create the Source on Context.IO
+    #
+    # @api private
+    #
+    # @return [true, false] Whether the creation succeeded or not.
+     def create_record
       if @email.to_s.empty? or @server.to_s.empty? or @username.to_s.empty? or @port.to_s.empty?
         raise ArgumentError.new("Mandatory arguments are not set")
       end
@@ -108,6 +159,15 @@ module ContextIO
       response['success']
     end
 
+    # Update existing Source on Context.IO
+    #
+    # Only sends the status, sync period, service level, password,
+    # provider token, provider token secret and provider consumer key
+    # as they are the only attributes the Context.IO API allows to be updated.
+    #
+    # @api private
+    #
+    # @return [true, false] Whether the update succeeded or not.
     def update_record
       return false if @label.to_s.empty?
 
