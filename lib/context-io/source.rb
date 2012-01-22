@@ -75,6 +75,11 @@ module ContextIO
       @provider_consumer_key = attributes['provider_consumer_key']
     end
 
+    # Returns all source's folders.
+    def folders
+      ContextIO::Folder.all(@account_id, @label)
+    end
+
     # Sends the source data to Context.IO
     #
     # If the source has been sent to Context.IO before, this will update
