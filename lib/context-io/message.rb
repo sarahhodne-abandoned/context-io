@@ -83,6 +83,46 @@ module ContextIO
       get("#{url}/flags")
     end
 
+    def read!
+      flag("seen" => true)
+    end
+
+    def unread!
+      flag("seen" => false)
+    end
+
+    def flagged!
+      flag("flagged" => true)
+    end
+
+    def unflagged!
+      flag("flagged" => false)
+    end
+
+    def answered!
+      flag("answered" => true)
+    end
+
+    def unanswered!
+      flag("answered" => false)
+    end
+
+    def draft!
+      flag("draft" => true)
+    end
+
+    def undraft!
+      flag("draft" => false)
+    end
+
+    def delete!
+      flag("deleted" => true)
+    end
+
+    def undelete!
+      flag("deleted" => false)
+    end
+    
     # Public: Returns array of messages of the thread a given message is in.
     def thread
       get("#{url}/thread")["messages"].map do |m|
@@ -110,6 +150,11 @@ module ContextIO
       options = {:dst_folder => destination, :move => move ? 1 :0}
       options[:dst_source] = destination_source if destination_source
       post(url, options)
+    end
+
+    def flag(value = {})
+      response = post("#{url}/flags", value)
+      response["success"]
     end
   end
 end
