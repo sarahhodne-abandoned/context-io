@@ -76,10 +76,10 @@ describe ContextIO::Message do
     it 'retrieves flags' do
       msg_id = '4f0f1c533f757e0f3c00000b'
       flags_response = stub_request(:get, "#{@messages_url}/#{msg_id}/flags").
-        to_return(:body => MultiJson.encode(['\\Seen']))
+        to_return(:body => {"answered"=>false, "draft"=>false, "deleted"=>false, "seen"=>true, "flagged"=>false}.to_json)
       flags = ContextIO::Message.all(@account).first.flags
-      flags.should be_a(Array)
-      flags.first.should == '\\Seen'
+      flags.should be_a(Hash)
+      flags['seen'].should == true
     end
   end
 
