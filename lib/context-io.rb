@@ -4,6 +4,7 @@ require 'context-io/account'
 require 'context-io/file'
 require 'context-io/source'
 require 'context-io/message'
+require 'context-io/folder'
 
 # The main ContextIO namespace.
 module ContextIO

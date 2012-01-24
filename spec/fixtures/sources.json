@@ -1,0 +1,1 @@
+[{"label":"bi@example.com::imap.example.com","authentication_type":"oauth","port":993,"service_level":"pro","username":"bi@example.com","server":"imap.example.com","type":"imap","sync_period":"1d","use_ssl":true,"status":"OK"}]
