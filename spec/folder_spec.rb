@@ -11,7 +11,7 @@ describe ContextIO::Folder do
     source_label = 'me@example.com::imap.example.com'
     @source = ContextIO::Source.new(account_id)
     @source.instance_eval { @label = source_label }
-    
+
     @folders_url = "https://api.context.io/2.0/accounts/#{account_id}/sources/#{source_label}/folders"
   end
 
