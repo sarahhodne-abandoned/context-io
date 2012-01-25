@@ -69,7 +69,15 @@ module ContextIO
     # @return [ContextIO::Folder] A Folder with the given attributes.
     def self.from_json(account_id, source_label, json)
       folder = new(account_id, source_label, json)
-      folder.name = json["name"]
+      folder.instance_eval do
+        @account_id = account_id
+        @source_label = source_label
+        @name = json['name']
+        @delim = json['delim']
+        @nb_messages = json['nb_messages']
+        @included_in_sync = json['included_in_sync']
+      end
+
       folder
     end
 
