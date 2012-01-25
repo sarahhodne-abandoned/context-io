@@ -76,7 +76,7 @@ describe ContextIO::Message do
 
     it 'retrieves flags' do
       flags_response = stub_request(:get, "#{@messages_url}/#{@msg_id}/flags").
-        to_return(:body => {"answered"=>false, "draft"=>false, "deleted"=>false, "seen"=>true, "flagged"=>false}.to_json)
+        to_return(:body => '{"answered":false,"draft":false,"deleted":false,"seen":true,"flagged":false}')
       flags = ContextIO::Message.all(@account).first.flags
       flags.should be_a(Hash)
       flags['seen'].should == true
@@ -85,70 +85,70 @@ describe ContextIO::Message do
     it 'sets read flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "seen" => "true" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.read!.should be_true
     end
 
     it 'resets read flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "seen" => "false" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.unread!.should be_true
     end
 
     it 'sets flagged flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "flagged" => "true" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.flagged!.should be_true
     end
 
     it 'resets flagged flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "flagged" => "false" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.unflagged!.should be_true
     end
 
     it 'sets answered flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "answered" => "true" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.answered!.should be_true
     end
 
     it 'resets answered flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "answered" => "false" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.unanswered!.should be_true
     end
 
     it 'sets draft flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "draft" => "true" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.draft!.should be_true
     end
 
     it 'resets draft flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "draft" => "false" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.undraft!.should be_true
     end
 
     it 'sets deleted flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "deleted" => "true" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.delete!.should be_true
     end
 
     it 'resets deleted flag' do
       flags_response = stub_request(:post, "#{@messages_url}/#{@msg_id}/flags").
         with(:body => { "deleted" => "false" }).
-        to_return(:body => { "success" => true }.to_json)
+        to_return(:body => '{"success":true}')
       ContextIO::Message.all(@account).first.undelete!.should be_true
     end
   end

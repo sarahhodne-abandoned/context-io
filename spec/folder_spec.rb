@@ -64,20 +64,20 @@ describe ContextIO::Folder do
 
     it "calls API method" do
       response = stub_request(:put, "https://api.context.io/2.0/accounts/#{@account.id}/sources/#{@escaped}").
-        to_return(:body => {"success" => true}.to_json)
+        to_return(:body => MultiJson.encode({"success" => true}))
       @existing.mkdir(@subdir_name)
       response.should have_been_requested
     end
 
     it "returns true when folder is created" do
       response = stub_request(:put, "https://api.context.io/2.0/accounts/#{@account.id}/sources/#{@escaped}").
-        to_return(:body => {"success" => true}.to_json)
+        to_return(:body => MultiJson.encode({"success" => true}))
       @existing.mkdir(@subdir_name).should be_true
     end
 
     it 'returns false when folder is not created' do
       response = stub_request(:put, "https://api.context.io/2.0/accounts/#{@account.id}/sources/#{@escaped}").
-        to_return(:body => {"success" => false}.to_json)
+        to_return(:body => MultiJson.encode({"success" => false}))
 
       @existing.mkdir(@subdir_name).should be_false
     end
