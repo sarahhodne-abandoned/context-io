@@ -51,35 +51,4 @@ describe ContextIO::Folder do
       folder.name.should == 'Follow up'
     end
   end
-
-  describe '#mkdir' do
-    before(:each) do
-      @existing = ContextIO::Folder.new(@account.id, @source.label, {})
-      @existing.name = "[Gmail]/Add Mail"
-      @subdir_name = "New folder"
-      @escaped = "#{@source.label}/folders/#{@existing.name}/#{@subdir_name}".split('/').map do |part|
-        URI.escape(part, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-      end.join('/')
-    end
-
-    it "calls API method" do
-      response = stub_request(:put, "https://api.context.io/2.0/accounts/#{@account.id}/sources/#{@escaped}").
-        to_return(:body => MultiJson.encode({"success" => true}))
-      @existing.mkdir(@subdir_name)
-      response.should have_been_requested
-    end
-
-    it "returns true when folder is created" do
-      response = stub_request(:put, "https://api.context.io/2.0/accounts/#{@account.id}/sources/#{@escaped}").
-        to_return(:body => MultiJson.encode({"success" => true}))
-      @existing.mkdir(@subdir_name).should be_true
-    end
-
-    it 'returns false when folder is not created' do
-      response = stub_request(:put, "https://api.context.io/2.0/accounts/#{@account.id}/sources/#{@escaped}").
-        to_return(:body => MultiJson.encode({"success" => false}))
-
-      @existing.mkdir(@subdir_name).should be_false
-    end
-  end
 end
