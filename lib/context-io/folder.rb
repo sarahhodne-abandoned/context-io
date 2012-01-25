@@ -42,6 +42,9 @@ module ContextIO
     # @overload all(source)
     #   @param [ContextIO::Source] source The source object
     #
+    # @example Find a the folders on a given source.
+    #   ContextIO::Folder.all(source)
+    #
     # @return [Array<ContextIO::Folder>] The folders in the given source.
     def self.all(*args)
       if args.length == 1

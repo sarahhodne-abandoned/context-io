@@ -8,7 +8,7 @@ module ContextIO
     attr_accessor :label, :authentication_type, :port, :service_level, :username,
                   :server, :source_type, :sync_period, :use_ssl, :status
     attr_reader :account_id, :email
-    
+
     # Public: Get all sources for given account.
     #
     # query - An optional Hash (default: {}) containing a query to filter the
@@ -18,7 +18,7 @@ module ContextIO
     # account - Account object or ID
     def self.all(account, query = {})
       return [] if account.nil?
-      
+
       account_id = account.is_a?(Account) ? account.id : account.to_s
       get("/2.0/accounts/#{account_id}/sources", query).map do |msg|
         Source.from_json(account_id, msg)
@@ -56,7 +56,7 @@ module ContextIO
 
     def initialize(account_id, attributes = {})
       raise ArgumentError if account_id.to_s.empty?
-      
+
       @account_id = account_id.to_s
       @email = attributes['email']
       @label = attributes['label'] || ''
@@ -105,7 +105,7 @@ module ContextIO
 
       response = delete("/2.0/accounts/#{@account_id}/sources/#{@label}")
       @label = '' if response['success']
-      
+
       response['success']
     end
 
@@ -143,7 +143,7 @@ module ContextIO
       if @email.to_s.empty? or @server.to_s.empty? or @username.to_s.empty? or @port.to_s.empty?
         raise ArgumentError.new("Mandatory arguments are not set")
       end
-      
+
       params = {}
       params['email'] = @email.to_s
       params['server'] = @server.to_s
