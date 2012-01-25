@@ -74,19 +74,5 @@ module ContextIO
       @source_label = source_label
       @raw_data = raw_data
     end
-
-    # Public: Creates new folder within given folder
-    #
-    # subdir_name - Name of folder to be created
-    #
-    # Returns true if folder is created; false otherwise
-    def mkdir(subdir_name)
-      base_url = "/2.0/accounts/#{account_id}/sources"
-      escaped = "#{source_label}/folders/#{name}/#{subdir_name}".split('/').map do |part|
-        URI.escape(part, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-      end.join('/')
-      response = put("/2.0/accounts/#{account_id}/sources/#{escaped}")
-      response["success"]
-    end
   end
 end
