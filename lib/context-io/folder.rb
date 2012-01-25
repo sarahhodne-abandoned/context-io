@@ -63,12 +63,15 @@ module ContextIO
     #
     # @api private
     #
+    # @param [String] account_id The account ID the source belongs to.
+    # @param [String] source_label The label of the source this folder belongs
+    #   to.
     # @param [Hash] json The parsed JSON object returned by a Context.IO API
     #   request. See their documentation for possible keys.
     #
     # @return [ContextIO::Folder] A Folder with the given attributes.
     def self.from_json(account_id, source_label, json)
-      folder = new(account_id, source_label, json)
+      folder = new
       folder.instance_eval do
         @account_id = account_id
         @source_label = source_label
@@ -79,17 +82,6 @@ module ContextIO
       end
 
       folder
-    end
-
-    # Internal: Returns ContextIO::Folder object
-    #
-    # account_id - Id of folder's account
-    # source_label - Label of folder's source
-    # raw_data - The parse JSON returned by the Context.IO server.
-    def initialize(account_id, source_label, raw_data)
-      @account_id = account_id
-      @source_label = source_label
-      @raw_data = raw_data
     end
   end
 end
