@@ -36,14 +36,23 @@ module ContextIO
     #
     # @api public
     #
-    # Returns an Array of Folder objects.
+    # @overload all(account_id, source_label)
+    #   @param [#to_s] account_id The account ID
+    #   @param [#to_s] source_label The source label
+    # @overload all(source)
+    #   @param [ContextIO::Source] source The source object
     #
     # @return [Array<ContextIO::Folder>] The folders in the given source.
-    def self.all(account, source)
-      return [] if account.nil? or source.nil?
-
-      account_id = account.is_a?(Account) ? account.id : account.to_s
-      source_label = source.is_a?(Source) ? source.label : source.to_s
+    def self.all(*args)
+      if args.length == 1
+        account_id = args.first.account_id
+        source_label = args.first.label
+      elsif args.length == 2
+        account_id = args.first.to_s
+        source_label = args.last.to_s
+      else
+        raise ArgumentError, "Expecting one or two arguments, got #{args.length}"
+      end
 
       get("/2.0/accounts/#{account_id}/sources/#{source_label}/folders").map do |msg|
         Folder.from_json(account_id, source_label, msg)

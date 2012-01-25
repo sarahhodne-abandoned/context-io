@@ -22,32 +22,26 @@ describe ContextIO::Folder do
         to_return(:body => json_folders)
     end
 
-    it 'retunrs array of Folder objects for given Account and Soruce objects' do
-      folders = ContextIO::Folder.all(@account, @source)
-      folders.should be_a(Array)
+    it 'accepts a Source object as an argument' do
+      expect { ContextIO::Folder.all(@source) }.to_not raise_error
+    end
+
+    it 'accepts an account ID and a source label as arguments' do
+      expect { ContextIO::Folder.all(@account.id, @source.label) }.to_not raise_error
+    end
+
+    it 'returns an array of Folder objects' do
+      folders = ContextIO::Folder.all(@source)
       folders.first.should be_a(ContextIO::Folder)
     end
 
-    it 'returns array of Folder objects for given account ID and source label' do
-      folders = ContextIO::Folder.all(@account.id, @source.label)
-      folders.first.should be_a(ContextIO::Folder)
-    end
-
-    it 'returns empty array if no account is given' do
-      ContextIO::Folder.all(nil, @source).should be_empty
-    end
-
-    it 'returns empty array if no source is given' do
-      ContextIO::Folder.all(@account, nil).should be_empty
-    end
-
-    it 'calls API method' do
-      ContextIO::Folder.all(@account, @source)
+    it 'calls the API method' do
+      ContextIO::Folder.all(@source)
       @response.should have_been_requested
     end
 
     it 'sets the name of Folder object' do
-      folder = ContextIO::Folder.all(@account, @source).first
+      folder = ContextIO::Folder.all(@source).first
       folder.name.should == 'Follow up'
     end
   end
