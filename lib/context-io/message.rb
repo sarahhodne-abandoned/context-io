@@ -122,7 +122,7 @@ module ContextIO
     def undelete!
       flag("deleted" => false)
     end
-    
+
     # Public: Returns array of messages of the thread a given message is in.
     def thread
       get("#{url}/thread")["messages"].map do |m|
@@ -137,7 +137,7 @@ module ContextIO
     def move(folder_name, destination_source = nil)
       copy_move(folder_name, true, destination_source)
     end
-      
+
     private
     def url
       "/2.0/accounts/#{account_id}/messages/#{message_id}"

@@ -241,7 +241,7 @@ describe ContextIO::Message do
     it 'raises ArgumentError for empty target folder' do
       lambda { @message.copy(nil) }.should raise_error ArgumentError
     end
-    
+
     it "copy calls API method with copy options" do
       @message.copy("Important")
       @copy_response.should have_been_requested
