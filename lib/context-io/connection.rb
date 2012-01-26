@@ -15,9 +15,12 @@ module ContextIO
     #
     # @api private
     #
+    # @param [true, false] raw Set this to true to disable JSON parsing of the
+    #   response body.
+    #
     # @return [Faraday::Connection] A Connection object that's correctly
     #   configured.
-    def connection
+    def connection(raw=false)
       default_options = {
         :headers => {
           :accept => 'application/json',
@@ -31,7 +34,7 @@ module ContextIO
         builder.use ContextIO::Request::ContextIOOAuth, ContextIO.authentication if ContextIO.authenticated?
         builder.use Faraday::Request::UrlEncoded
         builder.use ContextIO::Response::RaiseClientError
-        builder.use ContextIO::Response::ParseJson
+        builder.use ContextIO::Response::ParseJson unless raw
         builder.use ContextIO::Response::RaiseServerError
         builder.adapter(ContextIO.adapter)
       end

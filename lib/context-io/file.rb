@@ -115,7 +115,7 @@ module ContextIO
     #
     # @example Get 10 files that we have sent
     #   files = ContextIO::File.all(account,
-    #     :file => account.email_addresses.first,
+    #     :from => account.email_addresses.first,
     #     :limit => 10
     #   )
     #
@@ -146,30 +146,48 @@ module ContextIO
       account_id = account.is_a?(Account) ? account.id : account.to_s
       get("/2.0/accounts/#{account_id}/files", query).map do |file|
         if query[:group_by_revisions]
-          occurences = file['occurences'].map { |file| File.from_json(file) }
+          occurences = file['occurences'].map do |file|
+            File.from_json(account_id, file)
+          end
+
           {
             :occurences => occurences,
             :file_name => file['file_name'],
             :latest_date => Time.at(file['latest_date'].to_i)
           }
         else
-          File.from_json(file)
+          File.from_json(account_id, file)
         end
       end
     end
 
-    # Create a File with the JSON from Context.IO.]
+    # Fetch the content of the message.
+    #
+    # @api public
+    #
+    # @note Data transfer for this call is metered and charged at the end of the
+    #   month. See [Context.IO's pricing page](http://context.io/pricing) for
+    #   more info.
+    #
+    # @return [String] The raw contents of the file.
+    def content
+      get("/2.0/accounts/#@account_id/files/#@id/content", :raw => true)
+    end
+
+    # Create a File with the JSON from Context.IO.
     #
     # @api private
     #
+    # @param [String] account_id The account ID.
     # @param [Hash] json The parsed JSON object returned by a Context.IO API
     #   request. See their documentation for possible keys.
     #
     # @return [File] A file with the given attributes.
-    def self.from_json(json)
-      account = new
-      account.instance_eval do
+    def self.from_json(account_id, json)
+      file = new
+      file.instance_eval do
         @id = json['file_id']
+        @account_id = account_id
         @size = json['size']
         @type = json['type']
         @subject = json['subject']
@@ -210,7 +228,7 @@ module ContextIO
         end
       end
 
-      account
+      file
     end
   end
 end

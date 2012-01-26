@@ -72,4 +72,30 @@ describe ContextIO::File do
       end
     end
   end
+
+  describe '#content' do
+    before(:each) do
+      json_files = MultiJson.decode(File.read(File.join(@fixtures_path, 'files.json')))
+      file = json_files.first
+      @file_url = "#@files_url/#{file['file_id']}"
+      @request = stub_request(:get, @file_url).to_return(:body => MultiJson.encode(file))
+      @file = ContextIO::File.from_json(@account.id, file)
+    end
+
+    it 'calls the API request' do
+      request = stub_request(:get, "#@file_url/content")
+
+      @file.content
+
+      request.should have_been_requested
+    end
+
+    it 'does not parse the response' do
+      content = '{ "foo": "bar" }'
+      request = stub_request(:get, "#@file_url/content").
+        to_return(:body => content)
+
+      @file.content.should == content
+    end
+  end
 end

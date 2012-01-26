@@ -53,7 +53,7 @@ module ContextIO
     #
     # @return [Hash, Array, Object] The parsed JSON response.
     def request(method, path, params)
-      response = connection.send(method) do |request|
+      response = connection(params.delete(:raw)).send(method) do |request|
         case method.to_sym
         when :delete, :get, :put
           request.url(path, params)
