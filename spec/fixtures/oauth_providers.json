@@ -1,0 +1,12 @@
+[
+  {
+    "type": "GMAIL",
+    "provider_consumer_key": "1qa2ws3ed",
+    "provider_consumer_secret": "aq1sw2de3fr4gt5"
+  },
+  {
+    "type": "GOOGLEAPPSMARKETPLACE",
+    "provider_consumer_key": "qazwsxedc",
+    "provider_consumer_secret": "zaqxswcdevfrbgt"
+  }
+]
