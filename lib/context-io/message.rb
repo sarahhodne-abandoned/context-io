@@ -149,7 +149,7 @@ module ContextIO
       raise ArgumentError.new("Destination folder cannot be empty") if destination.empty?
       options = {:dst_folder => destination, :move => move ? 1 :0}
       options[:dst_source] = destination_source if destination_source
-      post(url, options)
+      post(url, options)['success']
     end
 
     def flag(value = {})
