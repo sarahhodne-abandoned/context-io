@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.add_dependency('faraday', '~> 0.7.5')
   s.add_dependency('simple_oauth', '~> 0.1.5')
   s.add_dependency('multi_json', '~> 1.0.0')
-  s.add_dependency('webmock', '~> 1.7.10')
 
   if RUBY_PLATFORM == 'java'
     s.add_dependency('jruby-openssl', '>= 0')
@@ -35,6 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('yard-rspec', '~> 0.1')
   s.add_development_dependency('redcarpet', '~> 2.1.0')
   s.add_development_dependency('github-markup', '~> 0.7.0')
+  s.add_development_dependency('webmock', '~> 1.7.10')
 
   # = MANIFEST =
   s.files = %w(
