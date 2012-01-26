@@ -22,6 +22,44 @@ module ContextIO
       get('/2.0/oauth_providers').map { |provider| from_json(provider) }
     end
 
+    # Create an OAuth provider
+    #
+    # @api public
+    #
+    # @param ['GMAIL', 'GOOGLEAPPSMARKETPLACE', :gmail, :googleappsmarketplace]
+    #   type The identification of the OAuth provider.
+    # @param [#to_s] consumer_key The OAuth consumer key.
+    # @param [#to_s] consumer_secret The OAuth consumer secret.
+    #
+    # @return [true, false] Whether the create succeeded or not.
+    def self.create(type, consumer_key, consumer_secret)
+      post('/2.0/oauth_providers', {
+        :type => type.to_s.upcase,
+        :provider_consumer_key => consumer_key.to_s,
+        :provider_consumer_secret => consumer_secret.to_s
+      })['success']
+    end
+
+    # Retrieve an OAuth provider
+    #
+    # @api public
+    #
+    # @param [#to_s] consumer_key The OAuth consumer key.
+    #
+    # @return [ContextIO::OAuthProvider] The OAuth provider.
+    def self.find(consumer_key)
+      from_json(get("/2.0/oauth_providers/#{consumer_key}"))
+    end
+
+    # Destroy the OAuth provider
+    #
+    # @api public
+    #
+    # @return [true, false] Whether the destroy was successful or not.
+    def destroy
+      delete("/2.0/oauth_providers/#@consumer_key")['success']
+    end
+
     # Create an OAuth provider with the JSON data from Context.IO.
     #
     # @api private
