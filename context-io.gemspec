@@ -4,8 +4,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = '1.3.5'
 
   s.name = 'context-io'
-  s.version = '0.0.0'
-  s.date = '2012-01-12'
+  s.version = '0.0.1'
+  s.date = '2012-01-26'
   s.rubyforge_project = 'context-io'
 
   s.summary = 'Ruby wrapper for the context.io API.'
@@ -39,7 +39,6 @@ Gem::Specification.new do |s|
   # = MANIFEST =
   s.files = %w(
     Gemfile
-    Gemfile.lock
     LICENSE
     README.md
     Rakefile
@@ -61,15 +60,33 @@ Gem::Specification.new do |s|
     lib/context-io/error/server_error.rb
     lib/context-io/error/service_unavailable.rb
     lib/context-io/error/unauthorized.rb
-    lib/context-io/faraday/request/contextio_oauth.rb
+    lib/context-io/file.rb
+    lib/context-io/folder.rb
+    lib/context-io/message.rb
+    lib/context-io/oauth_provider.rb
     lib/context-io/request.rb
+    lib/context-io/request/oauth.rb
     lib/context-io/resource.rb
+    lib/context-io/response.rb
     lib/context-io/response/parse_json.rb
     lib/context-io/response/raise_client_error.rb
     lib/context-io/response/raise_server_error.rb
+    lib/context-io/source.rb
     lib/context-io/version.rb
     spec/account_spec.rb
     spec/contextio_spec.rb
+    spec/file_spec.rb
+    spec/fixtures/accounts.json
+    spec/fixtures/files.json
+    spec/fixtures/files_group.json
+    spec/fixtures/folders.json
+    spec/fixtures/messages.json
+    spec/fixtures/oauth_providers.json
+    spec/fixtures/sources.json
+    spec/folder_spec.rb
+    spec/message_spec.rb
+    spec/oauth_provider_spec.rb
+    spec/source_spec.rb
     spec/spec_helper.rb
   )
   # = MANIFEST =
