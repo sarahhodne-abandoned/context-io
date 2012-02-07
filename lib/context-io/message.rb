@@ -71,9 +71,7 @@ module ContextIO
     # format - String determining required format of message body.
     # Allowed values are :plain and :html. Default value is :plain.
     def body(format = :plain)
-      if @body.empty?
-        @body = parse_body(get("#{url}/body"))
-      end
+      @body = parse_body(get("#{url}/body")) if @body.empty?
       @body["text/#{format}"]
     end
 
