@@ -110,7 +110,7 @@ request with failing specs.
 2. Create a topic branch.
 3. Implement your feature or bug fix.
 4. Add documentation for your feature or bug fix.
-5. Run `bundle exec rake rdoc`. If your changes are not 100% documented, go
+5. Run `bundle exec rake yard`. If your changes are not 100% documented, go
    back to step 4.
 6. Add specs for your feature or bug fix.
 7. Run `bundle exec rake spec`. If your changes are not 100% covered, go back
