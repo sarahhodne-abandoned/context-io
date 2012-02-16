@@ -2,9 +2,79 @@ require "context-io/resource"
 
 module ContextIO
   class Message < Resource
-    attr_accessor :message_id, :account_id, :sources, :from, :to, :cc, :subject, :date, :folders, :files
-    attr_reader :raw_data
+    # @api public
+    # @return [String] The unique ID of the message, as a hexadecimal string.
+    attr_reader :message_id
 
+    # @api public
+    # @see Account#id
+    # @return [String] The unique ID of the account the message belongs to.
+    attr_reader :account_id
+
+    # @api public
+    # @return [String] The message's subject.
+    attr_reader :subject
+
+    # @api public
+    # @return [Hash] Information about the sender. Possible keys are `:email`,
+    #   `:name` and `:thumbnail`. All values are Strings.
+    attr_reader :from
+
+    # @api public
+    # @return [Array<Hash>] Information about the receiver(s). Possible keys are
+    #   `:email`, `:name` and `:thumbnail`. All values are Strings.
+    attr_reader :to
+
+    # @api public
+    # @return [Array<Hash>] Information about people CC-ed on the email.
+    #   Possible keys are `:email`, `:name` and `:thumbnail`. All values are
+    #   Strings.
+    attr_reader :cc
+
+    # @api public
+    # @return [Array<ContextIO::Source>] The sources the message is connected
+    #   to. This will contact the Context.IO server to load the sources if they
+    #   haven't been loaded already.
+    def sources
+      unless defined?(@sources)
+        @sources = @source_labels.map do |label|
+          Source.find(@account_id, label)
+        end
+      end
+
+      @sources
+    end
+
+    # @api public
+    # @return [Time] When the message was sent.
+    attr_reader :date
+
+    # @api public
+    # @return [Array<String>] The folder(s) this message is in. Format is
+    #   "<source_label>::<folder_name>".
+    attr_reader :folders
+
+    # @api public
+    # @return [Array<ContextIO::File>] The files attached to this message.
+    attr_reader :files
+
+    # Get all messages for a given account
+    #
+    # @api public
+    #
+    # @param [ContextIO::Account, #to_s] account The account or account ID to
+    #   look for messages in.
+    # @param [Hash] query An optional query to filter responses by.
+    # @option query [String, Regexp] :subject Get messages whose subject match
+    #   this string or regular expression.
+    # @option query [String] :email Email address of the contact for whom you
+    #   want the latest messages exchanged with. By "exchanged with contact X"
+    #   we mean any email received from contact X, sent to contact X or sent by
+    #   anyone to both contact X and the source owner.
+    # @option query [String] :to Email address of a contact messages have been
+    #   sent to.
+    # @option query [String] 
+    #
     # Public: Get all messages for given account.
     #
     # query - An optional Hash (default: {}) containing a query to filter the
@@ -37,15 +107,18 @@ module ContextIO
     # Returns a ContextIO::Message instance.
     def self.from_json(account_id, json_msg)
       message = new(account_id, json_msg)
-      message.message_id = json_msg["message_id"]
-      message.subject = json_msg["subject"]
-      message.date = Time.at json_msg["date"]
-      message.sources = json_msg["sources"]
-      message.from = json_msg["addresses"]["from"]
-      message.to = json_msg["addresses"]["to"]
-      message.cc = json_msg["addresses"]["cc"]
-      message.folders = json_msg["folders"]
-      message.files = json_msg["files"]
+      message.instance_eval do
+        @message_id = json_msg['message_id']
+        @subject = json_msg['subject']
+        @date = Time.at json_msg['date']
+        @sources = json_msg['sources']
+        @from = json_msg['addresses']['from']
+        @to = json_msg['addresses']['to']
+        @cc = json_msg['addresses']['cc']
+        @folders = json_msg['folders']
+        @files = json_msg['files']
+      end
+
       message
     end
 
@@ -137,7 +210,7 @@ module ContextIO
     def move(folder_name, destination_source = nil)
       copy_move(folder_name, true, destination_source)
     end
-
+      
     private
     def url
       "/2.0/accounts/#{account_id}/messages/#{message_id}"
@@ -149,7 +222,7 @@ module ContextIO
       raise ArgumentError.new("Destination folder cannot be empty") if destination.empty?
       options = {:dst_folder => destination, :move => move ? 1 :0}
       options[:dst_source] = destination_source if destination_source
-      post(url, options)['success']
+      post(url, options)
     end
 
     def flag(value = {})
