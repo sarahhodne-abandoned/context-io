@@ -1,7 +1,7 @@
 # Hash extensions
 #
 # This is borrowed from ActiveSupport. We don't want the entire ActiveSupport
-# library (it's huge), so we'll just add this method.
+# library (it's huge), so we'll just add the methods we want.
 class Hash
   # Merge self with another hash recursively
   #
@@ -26,6 +26,22 @@ class Hash
       target[key] = hash[key]
     end
     target
+  end
+
+  # Make a new hash with all keys converted to symbols
+  #
+  # @api public
+  #
+  # @example Convert strings keys to symbol keys
+  #   { 'foo' => 'bar' }.symbolize_keys
+  #   # => { :foo => 'bar' }
+  #
+  # @return [Hash{Symbol => Object}]
+  def symbolize_keys
+    inject({}) do |options, (key, value)|
+      options[(key.to_sym rescue key) || key] = value
+      options
+    end
   end
 end
 
