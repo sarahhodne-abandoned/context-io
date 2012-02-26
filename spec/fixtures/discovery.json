@@ -1,0 +1,18 @@
+{
+  "email": "example@gmail.com",
+  "found": true,
+  "type": "gmail",
+  "imap": {
+    "server": "imap.googlemail.com",
+    "username": "example@gmail.com",
+    "port": 993,
+    "use_ssl": true,
+    "oauth": true
+  },
+  "documentation": [
+    {
+      "description": "How to enable IMAP/POP3 in GMail",
+      "url": "http://mail.google.com/support/bin/answer.py?answer=13273"
+    }
+  ]
+}
