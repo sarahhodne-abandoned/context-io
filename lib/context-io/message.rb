@@ -77,11 +77,17 @@ module ContextIO
     #
     # Public: Get all messages for given account.
     #
-    # query - An optional Hash (default: {}) containing a query to filter the
-    #         responses. For possible values see Context.IO API documentation.
-    # Returns an Array of Message objects.
-    #
     # account - Account object or ID
+    #
+    # query - An optional Hash (default: {}) containing a query to filter the
+    # responses. You can specify that you want message bodies as well for
+    # example:
+    #
+    #     ContextIO::Messages(account, :include_body => true)
+    #
+    # For other possible options see the Context.IO API documentation.
+    #
+    # Returns an Array of Message objects.
     def self.all(account, query = {})
       return [] if account.nil?
 
@@ -128,21 +134,17 @@ module ContextIO
     def initialize(account_id, raw_data)
       @account_id = account_id
       @raw_data = raw_data
-      @body = {}
+      @body = parse_body(raw_data['body'])
     end
 
     # Public: Returns message body. Data is lazy loaded. Message
-    # body fetched from Context.IO server contain plain text and html
+    # body fetched from Context.IO server contains both plain text and html
     # format and both formats are stored.
     #
     # format - String determining required format of message body.
     # Allowed values are :plain and :html. Default value is :plain.
     def body(format = :plain)
-      if @body.empty?
-        get("#{url}/body").each do |b|
-          @body[b["type"]] = b["content"]
-        end
-      end
+      @body = parse_body(get("#{url}/body")) if @body.empty?
       @body["text/#{format}"]
     end
 
@@ -214,6 +216,17 @@ module ContextIO
     private
     def url
       "/2.0/accounts/#{account_id}/messages/#{message_id}"
+    end
+
+    def parse_body(body)
+      if body.nil?
+        {}
+      else
+        body.inject({}) do |hash, e|
+          hash[e['type']] = e['content']
+          hash
+        end
+      end
     end
 
     def copy_move(folder_name, move, destination_source)

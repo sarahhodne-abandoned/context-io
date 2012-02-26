@@ -64,6 +64,7 @@ describe ContextIO::Message do
       ContextIO::Message.all(@account, q)
       @response.should have_been_requested
     end
+
   end
 
   describe 'message flags' do
@@ -197,6 +198,19 @@ describe ContextIO::Message do
         to_return(:body => headers)
     end
 
+    context "when a message has a body" do
+      before { @msg = ContextIO::Message.all(@account)[1] }
+
+      it "doesn't request it" do
+        @msg.body.should == 'Just a message'
+        @body_resp.should_not have_been_requested
+      end
+
+      it "sets the instance var @body to it" do
+        @msg.body(:html).start_with?('<html>').should be_true
+      end
+    end
+
     it 'requests body on first access' do
       msg = ContextIO::Message.all(@account).first
       msg.body.should == 'Just a message'
@@ -271,7 +285,7 @@ describe ContextIO::Message do
       @move_response.should have_been_requested
     end
   end
-  
+
   describe '.find' do
     before(:each) do
       @messages = MultiJson.decode(File.read(File.join(@fixtures_path, 'messages.json')))
