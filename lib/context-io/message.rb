@@ -73,15 +73,39 @@ module ContextIO
     #   anyone to both contact X and the source owner.
     # @option query [String] :to Email address of a contact messages have been
     #   sent to.
-    # @option query [String] 
+    # @option query [String] :from Email address of a contact messages have been
+    #   received from.
+    # @option query [String] :cc Email address of a contact CC'ed on the
+    #   messages.
+    # @option query [String] :bcc Email address of a contact BCC'ed on the
+    #   messages.
+    # @option query [String] :folder Filter messages by the folder (or Gmail
+    #   label). This parameter can be the complete folder name with the
+    #   appropriate hierarchy delimiter for the mail server being queried (eg.
+    #   Inbox/My folder) or the "symbolic name" of the folder (eg. \Starred).
+    #   The symbolic name refers to attributes used to refer to special use
+    #   folders ina language-independant way. See
+    #   http://code.google.com/apis/gmail/imap/#xlist (Gmail specific) and
+    #   RFC-6154.
+    # @option query [Integer] :date_before Only include messages before a given
+    #   timestamp. The value this filter is applied to is the Date: header of
+    #   the message which refers to the time the message is sent from the
+    #   origin.
+    # @option query [Integer] :date_after Only include messages after a given
+    #   timestamp. The value this filter is applied to is the Date: header of
+    #   the message which refers to the time the message is sent from the
+    #   origin.
+    # @option query [Integer] :indexed_before Only include messages indexed
+    #   before a given timestamp. This is not the same as the date of the
+    #   email, it is the time Context.IO indexed this message.
+    # @option query [Integer] :indexed_after Only include messages indexed after
+    #   a given timestamp. This is not the same as the date of the email, it is
+    #   the time Context.IO indexed this message.
+    # @option query [Integer] :limit The maximum number of results to return.
+    # @option query [Integer] :offset Start the list at this offset
+    #   (zero-based).
     #
-    # Public: Get all messages for given account.
-    #
-    # query - An optional Hash (default: {}) containing a query to filter the
-    #         responses. For possible values see Context.IO API documentation.
-    # Returns an Array of Message objects.
-    #
-    # account - Account object or ID
+    # @return [Array<ContextIO::Message>] The matching messages
     def self.all(account, query = {})
       return [] if account.nil?
 
@@ -98,16 +122,18 @@ module ContextIO
       Message.from_json(account_id, get("/2.0/accounts/#{account_id}/messages/#{message_id}"))
     end
 
-    # Internal: Create an Message instance from the JSON returned by the
-    # Context.IO server.
+    # Create an Message instance from the JSON returned by the API
     #
-    # json - The parsed JSON returned by the Context.IO server. See their
-    #        documentation for what keys are possible.
+    # @api private
     #
-    # Returns a ContextIO::Message instance.
+    # @param [Hash] json The parsed JSON returned by the Context.IO server. See
+    #   their documentation for what keys are possible.
+    #
+    # @return [ContextIO::Message]
     def self.from_json(account_id, json_msg)
-      message = new(account_id, json_msg)
+      message = new
       message.instance_eval do
+        @account_id = account_id
         @message_id = json_msg['message_id']
         @subject = json_msg['subject']
         @date = Time.at json_msg['date']
@@ -122,21 +148,21 @@ module ContextIO
       message
     end
 
-    # Internal: Returns ContextIO::Message object
-    #
-    # raw_data - The parse JSON returned by the Context.IO server.
-    def initialize(account_id, raw_data)
-      @account_id = account_id
-      @raw_data = raw_data
+    def initialize
       @body = {}
     end
 
-    # Public: Returns message body. Data is lazy loaded. Message
-    # body fetched from Context.IO server contain plain text and html
-    # format and both formats are stored.
+    # Fetch the message body if it isn't fetched, and return it
     #
-    # format - String determining required format of message body.
-    # Allowed values are :plain and :html. Default value is :plain.
+    # The data is loaded lazily. The body fetched from the Context.IO servers
+    # contain both the plain text and the HTML, and both of them are stored when
+    # fetched.
+    #
+    # @api public
+    #
+    # @param [:plan, :html] format The format of the message body to return
+    #
+    # @return [String] The message body in the format specified
     def body(format = :plain)
       if @body.empty?
         get("#{url}/body").each do |b|
@@ -146,7 +172,8 @@ module ContextIO
       @body["text/#{format}"]
     end
 
-    # Public: Returns message headers. Data is lazy loaded.
+    # @api public
+    # @return [
     def headers
       @headers ||= get("#{url}/headers")
     end
