@@ -5,13 +5,13 @@ describe ContextIO::Discovery do
     fixtures_path = File.join(File.dirname(__FILE__), 'fixtures')
     json_discovery = File.read(File.join(fixtures_path, 'discovery.json'))
     uri = 'https://api.context.io/2.0/discovery'
-    @existing_request = stub_request(:get, uri)
-      .with(:query => { :email => 'example@gmail.com', :source_type => 'IMAP'})
-      .to_return(:body => json_discovery)
+    @existing_request = stub_request(:get, uri).
+      with(:query => { :email => 'example@gmail.com', :source_type => 'IMAP'}).
+      to_return(:body => json_discovery)
 
-    @nosettings_request = stub_request(:get, uri)
-      .with(:query => { :email => 'me@example.com', :source_type => 'IMAP'})
-      .to_return(:body => '{"email":"me@example.com","found":false}')
+    @nosettings_request = stub_request(:get, uri).
+      with(:query => { :email => 'me@example.com', :source_type => 'IMAP'}).
+      to_return(:body => '{"email":"me@example.com","found":false}')
   end
 
   describe '.discover' do
