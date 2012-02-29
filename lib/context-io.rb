@@ -11,6 +11,6 @@ require 'context-io/folder'
 
 # The main ContextIO namespace.
 module ContextIO
-    extend Config
-    extend Authentication
+  extend Config
+  extend Authentication
 end
