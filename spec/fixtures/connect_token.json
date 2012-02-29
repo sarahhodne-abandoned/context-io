@@ -1,0 +1,1 @@
+{"token":"1234567890abcdef","email":"eva.doe@example.com","created":1234567890,"used":12345678912,"serverLabel":"eva.doe@example.com::mail.example.com","callback_url":"http:\/\/example.com\/callback","service_level":"pro","first_name":"Eva","last_name":"Doe","account":{"id":"012356789abcdef","created":0,"suspended":0,"sources":[]}}
