@@ -65,4 +65,42 @@ describe ContextIO::ConnectToken do
       @create_request.should have_been_requested
     end
   end
+
+  describe '.destroy' do
+    before(:each) do
+      url = 'https://api.context.io/2.0/connect_tokens/1234567890abcdef'
+      @destroy_request = stub_request(:delete, url).
+        to_return(:body => '{"success":true}')
+    end
+
+    it 'calls the API request' do
+      ContextIO::ConnectToken.destroy('1234567890abcdef')
+      @destroy_request.should have_been_requested
+    end
+
+    it 'returns the success attribute' do
+      ContextIO::ConnectToken.destroy('1234567890abcdef').should be_true
+    end
+  end
+
+  describe '#destroy' do
+    before(:each) do
+      url = 'https://api.context.io/2.0/connect_tokens/1234567890abcdef'
+      @destroy_request = stub_request(:delete, url).
+        to_return(:body => '{"success":true}')
+      @token = ContextIO::ConnectToken.new
+      @token.instance_eval do
+        @token = '1234567890abcdef'
+      end
+    end
+
+    it 'calls the API request' do
+      @token.destroy
+      @destroy_request.should have_been_requested
+    end
+
+    it 'returns the success attribute' do
+      @token.destroy.should be_true
+    end
+  end
 end

@@ -93,6 +93,29 @@ module ContextIO
       { :token_id => response['token'], :redirect_url => response['browser_redirect_url'] }
     end
 
+    # Delete a connect token
+    #
+    # @api public
+    #
+    # @param [String] token_id The token to destroy
+    #
+    # @return [Boolean] Whether the delete succeeded or not.
+    def self.destroy(token_id)
+      delete("/2.0/connect_tokens/#{token_id}")['success']
+    end
+
+    # Delete the connect token
+    #
+    # This is just a shortcut for
+    # `ContextIO::ConnectToken.destroy(token.token)`.
+    #
+    # @api public
+    #
+    # @return [Boolean]Whether the delete succeeded or not
+    def destroy
+      ConnectToken.destroy(self.token)
+    end
+
     # Create an ConnectToken instance from the data returned by the API
     #
     # @api private
