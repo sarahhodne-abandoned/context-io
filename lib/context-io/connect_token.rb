@@ -72,6 +72,27 @@ module ContextIO
       from_json(get("/2.0/connect_tokens/#{token_id}"))
     end
 
+    # Create a connect token
+    #
+    # @api public
+    #
+    # @param [Hash] data The data to use to create the connect token
+    # @option data [String] :callback_url When the user's mailbox is connected
+    #   to your API key, the browser will call this url (GET). This call will
+    #   have a parameter called `contextio_token` indicating the connect_token
+    #   related to this callback. You can then get this connect_token to obtain
+    #   details about the account and source created through that token and save
+    #   that account id in your own user data.
+    #
+    # @return [Hash] The response data. Has two keys, `:token_id` and
+    #   `:redirect_url`. You want to redirect the person to the `:redirect_url`,
+    #   and you can get the token information by running
+    #   `ContextIO::ConnectToken.find(response[:token_id])`.
+    def self.create(data)
+      response = post('/2.0/connect_tokens', data)
+      { :token_id => response['token'], :redirect_url => response['browser_redirect_url'] }
+    end
+
     # Create an ConnectToken instance from the data returned by the API
     #
     # @api private

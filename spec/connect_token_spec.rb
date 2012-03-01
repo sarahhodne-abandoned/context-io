@@ -40,4 +40,29 @@ describe ContextIO::ConnectToken do
       @single_request.should have_been_requested
     end
   end
+
+  describe '.create' do
+    before(:each) do
+      json_response = File.read(File.expand_path('../fixtures/create_connect_token.json', __FILE__))
+
+      url = 'https://api.context.io/2.0/connect_tokens'
+      @create_request = stub_request(:post, url).
+        to_return(:body => json_response)
+    end
+
+    it 'returns a token ID' do
+      response = ContextIO::ConnectToken.create({ :callback_url => 'http://example.com' })
+      response[:token_id].should == 'abcdef0123456789'
+    end
+
+    it 'returns the URL to redirect to' do
+      response = ContextIO::ConnectToken.create({ :callback_url => 'http://example.com' })
+      response[:redirect_url].should_not be_empty
+    end
+
+    it 'calls the API request' do
+      ContextIO::ConnectToken.create({ :callback_url => 'http://example.com' })
+      @create_request.should have_been_requested
+    end
+  end
 end
