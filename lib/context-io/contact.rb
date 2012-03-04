@@ -41,6 +41,20 @@ module ContextIO
       end
     end
 
+    # Retrieve a single contact.
+    #
+    # @api public
+    #
+    # @param [ContextIO::Account, #to_s] account The account or account ID to
+    #   look for contacts in.
+    # @param [#to_s] email The email address of the contact to look for.
+    #
+    # @return [ContextIO::Contact] The matching contact
+    def self.find(account, email)
+      account_id = account.is_a?(Account) ? account.id : account.to_s
+      from_json(account_id, get("/2.0/accounts/#{account_id}/contacts/#{email}"))
+    end
+
     # Create a Contact with the data returned by the API.
     #
     # @api private
