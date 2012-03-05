@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'context-io/resource'
 
 module ContextIO
@@ -15,15 +13,15 @@ module ContextIO
     attr_reader :id
 
     # @api public
-    # @return [String] The username of the account.
+    # @return [String] The username assigned to the account.
     attr_reader :username
 
     # @api public
-    # @return [Time] When the account was created.
+    # @return [Time] The account creation time.
     attr_reader :created
 
     # @api public
-    # @return [Time, nil] When the account was suspended, or nil if the account
+    # @return [Time, nil] The account suspension time, or nil if the account
     #   isn't suspended.
     attr_reader :suspended
 
@@ -45,7 +43,8 @@ module ContextIO
     attr_reader :password_expired
 
     # @api public
-    # @return [Array<Source>] The sources associated with this account.
+    # @return [Array<ContextIO::Source>] The sources associated with this
+    #   account.
     attr_reader :sources
 
     # Get all the accounts, optionally filtered with a query
@@ -75,16 +74,14 @@ module ContextIO
     # @example Fetch all accounts with the email address me@example.com
     #   ContextIO::Account.all(:email => 'me@example.com')
     #
-    # @return [Array<Account>] The accounts matching the query, or all if no
-    #   query is given.
+    # @return [Array<ContextIO::Account>] The accounts matching the query, or
+    #   all if no query is given.
     def self.all(query={})
       query[:status] = query[:status].to_s.upcase if query[:status]
       if query.has_key?(:status_ok)
         query[:status_ok] = query[:status_ok] ? '1' : '0'
       end
-      get('/2.0/accounts', query).map do |account|
-        Account.from_json(account)
-      end
+      get('/2.0/accounts', query).map { |account| from_json(account) }
     end
 
     # Find an account given its ID
@@ -96,9 +93,9 @@ module ContextIO
     # @example Find the account with the ID 'foobar'
     #   ContextIO::Account.find('foobar')
     #
-    # @return [Account] The account with the given ID.
+    # @return [ContextIO::Account] The account with the given ID.
     def self.find(id)
-      Account.from_json(get("/2.0/accounts/#{id}"))
+      from_json(get("/2.0/accounts/#{id}"))
     end
 
     # Initialize an Account
@@ -143,7 +140,7 @@ module ContextIO
     #
     # @return [true, false] Whether the save succeeded or not.
     def save
-      self.id ? update_record : create_record
+      id ? update_record : create_record
     end
 
     # Update attributes on the account object and then send them to Context.IO
