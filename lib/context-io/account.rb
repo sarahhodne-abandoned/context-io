@@ -200,6 +200,8 @@ module ContextIO
     # @note This call is metered and charged for each source with basic service
     #   level. See Context.IO's [pricing page](http://context.io/pricing) for
     #   details.
+    #
+    # @return [void]
     def sync!
       post("/2.0/accounts/#{self.id}/sync")
     end
