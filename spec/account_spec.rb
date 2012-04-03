@@ -243,5 +243,38 @@ describe ContextIO::Account do
       existing_account.first_name.should == 'John'
     end
   end
+
+  describe '#sync_info' do
+    it 'calls the API request' do
+      @stub = stub_request(:get,
+        'https://api.context.io/2.0/accounts/1234567890abcdef/sync').
+        to_return(
+        :body => '{
+                    "me@example.com::mail.example.com": {
+                      "INBOX": {
+                        "initial_import_finished": true,
+                        "last_expunge": 1234567890,
+                        "last_sync_start": 1234567890,
+                        "last_sync_stop": 1234567892
+                      }
+                    }
+                  }')
+
+      existing_account.sync_info
+
+      @stub.should have_been_requested
+    end
+  end
+
+  describe '#sync!' do
+    it 'calls the API request' do
+      @stub = stub_request(:post,
+        'https://api.context.io/2.0/accounts/1234567890abcdef/sync')
+
+      existing_account.sync!
+
+      @stub.should have_been_requested
+    end
+  end
 end
 

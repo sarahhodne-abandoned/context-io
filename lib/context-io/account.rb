@@ -166,6 +166,44 @@ module ContextIO
       response['success']
     end
 
+    # Get information about the last time mailboxes in this account were synced
+    #
+    # The timestamps are unix timestamps (seconds since the epoch). Feed them
+    # into `Time.at` to get a `Time` object.
+    #
+    # @api public
+    #
+    # @example
+    #   account.sync_info
+    #   # => {
+    #   #      'me@example.com::mail.example.com' => {
+    #   #        'INBOX' => {
+    #   #          'initial_import_finished' => true,
+    #   #          'last_expunge' => 1234567890,
+    #   #          'last_sync_start' => 1234567890,
+    #   #          'last_sync_stop' => 1234567892
+    #   #        }
+    #   #      }
+    #   #    }
+    #
+    #
+    # @return [Hash] Information about when mailboxes were synced. See the
+    #   example for information about the hash format.
+    def sync_info
+      get("/2.0/accounts/#{self.id}/sync")
+    end
+
+    # Trigger a sync of all sources on the account
+    #
+    # @api public
+    #
+    # @note This call is metered and charged for each source with basic service
+    #   level. See Context.IO's [pricing page](http://context.io/pricing) for
+    #   details.
+    def sync!
+      post("/2.0/accounts/#{self.id}/sync")
+    end
+
     # Create the account on Context.IO
     #
     # @api private
