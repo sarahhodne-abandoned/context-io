@@ -52,25 +52,6 @@ describe ContextIO::File do
 
       @request.should have_been_requested
     end
-
-    context 'group_by_revisions' do
-      before(:each) do
-        json_files = File.read(File.join(@fixtures_path, 'files_group.json'))
-        @request = stub_request(:get, @files_url).
-          with(:query => { :group_by_revisions => '1' }).
-          to_return(:body => json_files)
-      end
-
-      it 'converts occurences to File objects' do
-        files = ContextIO::File.all(@account, :group_by_revisions => true)
-        files.first[:occurences].first.should be_a(ContextIO::File)
-      end
-
-      it 'converts latest_date to a Time object' do
-        files = ContextIO::File.all(@account, :group_by_revisions => true)
-        files.first[:latest_date].should be_a(Time)
-      end
-    end
   end
 
   describe '#content' do

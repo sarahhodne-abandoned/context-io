@@ -100,13 +100,6 @@ module ContextIO
     # @option query [#to_i] :indexed_after Only include files attached to
     #   messages indexed after this timestamp. This is not the same as the date
     #   of the email, it is the time Context.IO indexed this message.
-    # @option query [true, false] :group_by_revisions (false) If this is set to
-    #   true, the method will return an array of Hashes, where each Hash
-    #   represents a group of revisions of the same file. The Hash has an
-    #   `:occurences` field, which is an Array of {File} objects, a `:file_name`
-    #   field, which is the name of the file, and a `:latest_date` field, which
-    #   is a Time object representing the last time a message with this file was
-    #   sent.
     # @option query [#to_i] :limit The maximum count of results to return.
     # @option query [#to_i] :offset (0) The offset to begin returning files at.
     #
@@ -125,9 +118,7 @@ module ContextIO
     # @example Find JP(E)G files
     #   files = ContextIO::File.all(account, :file_name => /\.jpe?g$/)
     #
-    # @return [Array<File>, Array<Hash>] The matching file objects. If the
-    #   `:group_by_revisions` flag is set, the return value changes, see the
-    #   documentation for that flag above.
+    # @return [Array<File>] The matching file objects.
     def self.all(account, query={})
       if query[:file_name] && query[:file_name].is_a?(Regexp)
         query[:file_name] = "/#{query[:file_name].source}/"
@@ -139,25 +130,9 @@ module ContextIO
         end
       end
 
-      if query[:group_by_revisions]
-        query[:group_by_revisions] = query[:group_by_revisions] ? '1' : '0'
-      end
-
       account_id = account.is_a?(Account) ? account.id : account.to_s
       get("/2.0/accounts/#{account_id}/files", query).map do |file|
-        if query[:group_by_revisions]
-          occurences = file['occurences'].map do |file|
-            File.from_json(account_id, file)
-          end
-
-          {
-            :occurences => occurences,
-            :file_name => file['file_name'],
-            :latest_date => Time.at(file['latest_date'].to_i)
-          }
-        else
-          File.from_json(account_id, file)
-        end
+        File.from_json(account_id, file)
       end
     end
 
