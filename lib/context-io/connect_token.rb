@@ -55,10 +55,19 @@ module ContextIO
     #
     # @api public
     #
+    # @parm [ContextIO::Account] account Only return tokens beloning to this
+    #   account (if one is passed).
+    #
     # @return [Array<ContextIO::ConnectToken>] All connect tokens created with
     #   your API key.
-    def self.all
-      get('/2.0/connect_tokens').map { |obj| from_json(obj) }
+    def self.all(account=nil)
+      if account
+        url = "/2.0/accounts/#{account.id}/connect_tokens"
+      else
+        url = '/2.0/connect_tokens'
+      end
+
+      get(url).map { |obj| from_json(obj) }
     end
 
     # Fetch a single connect token by it's token ID
@@ -66,10 +75,19 @@ module ContextIO
     # @api public
     #
     # @param [String] token_id The token ID. Returned by {#token}.
+    # @param [ContextIO::Account] account An optional account to scope the
+    #   token in (if the token isn't in this account, a not found error will be
+    #   raised).
     #
     # @return [ContextIO::ConnectToken] The requested connect token.
-    def self.find(token_id)
-      from_json(get("/2.0/connect_tokens/#{token_id}"))
+    def self.find(token_id, account=nil)
+      if account
+        url = "/2.0/accounts/#{account.id}/connect_tokens/#{token_id}"
+      else
+        url = "/2.0/connect_tokens/#{token_id}"
+      end
+
+      from_json(get(url))
     end
 
     # Create a connect token
@@ -83,13 +101,21 @@ module ContextIO
     #   related to this callback. You can then get this connect_token to obtain
     #   details about the account and source created through that token and save
     #   that account id in your own user data.
+    # @param [ContextIO::Account] account Pass in an account if you want to add
+    #   a second token instead of creating a new account.
     #
     # @return [Hash] The response data. Has two keys, `:token_id` and
     #   `:redirect_url`. You want to redirect the person to the `:redirect_url`,
     #   and you can get the token information by running
     #   `ContextIO::ConnectToken.find(response[:token_id])`.
-    def self.create(data)
-      response = post('/2.0/connect_tokens', data)
+    def self.create(data, account=nil)
+      if account
+        url = "/2.0/accounts/#{account.id}/connect_tokens"
+      else
+        url = '/2.0/connect_tokens'
+      end
+      response = post(url, data)
+
       { :token_id => response['token'], :redirect_url => response['browser_redirect_url'] }
     end
 
@@ -98,10 +124,18 @@ module ContextIO
     # @api public
     #
     # @param [String] token_id The token to destroy
+    # @param [ContextIO::Account] account Scope the request to this account (if
+    #   given).
     #
     # @return [Boolean] Whether the delete succeeded or not.
-    def self.destroy(token_id)
-      delete("/2.0/connect_tokens/#{token_id}")['success']
+    def self.destroy(token_id, account=nil)
+      if account
+        url = "/2.0/accounts/#{account.id}/connect_tokens/#{token_id}"
+      else
+        url = "/2.0/connect_tokens/#{token_id}"
+      end
+
+      delete(url)['success']
     end
 
     # Delete the connect token
@@ -111,9 +145,12 @@ module ContextIO
     #
     # @api public
     #
+    # @param [ContextIO::Account] account Scope the request to this account (if
+    #   given).
+    #
     # @return [Boolean]Whether the delete succeeded or not
-    def destroy
-      ConnectToken.destroy(self.token)
+    def destroy(account=nil)
+      ConnectToken.destroy(self.token, account)
     end
 
     # Create an ConnectToken instance from the data returned by the API
