@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>ContextIO by dvyjones</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/dvyjones/context-io">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>ContextIO</h1>
+            <h2>ContextIO is a Ruby wrapper for the Context.IO web service.</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/dvyjones/context-io/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/dvyjones/context-io/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>ContextIO - Extract data from email</h1>
+
+<h2>Description</h2>
+
+<p>ContextIO is a Ruby wrapper for the <a href="http://context.io">Context.IO</a> web service.</p>
+
+<p>Context.IO is the missing email API that makes it easy and fast
+to integrate your user's email data in your application.</p>
+
+<p>ContextIO follows the rules of <a href="http://semver.org">Semantic Versioning</a> and uses
+<a href="http://tomdoc.org">TomDoc</a> for inline documentation.</p>
+
+<h2>Installation</h2>
+
+<p>The best way to install ContextIO is through Rubygems:</p>
+
+<pre><code>$ [sudo] gem install context-io
+</code></pre>
+
+<p>If you're installing from source, you can use <a href="http://gembundler.org">Bundler</a> to pick up all
+the gems:</p>
+
+<pre><code>$ bundle install
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>The ContextIO classes map pretty much one-to-one to the Context.IO API
+resources, which you can find <a href="http://context.io/docs/2.0">on their documentation site</a>.</p>
+
+<h3>Authenticate</h3>
+
+<p>ContextIO uses two-legged <a href="http://oauth.net/">OAuth</a> for authentication, which means you
+need to get an API key from <a href="http://context.io">Context.IO</a>. The API key consists of a
+consumer key and a consumer secret, and once you have them you can set up
+ContextIO like this:</p>
+
+<div class="highlight">
+<pre><span class="no">ContextIO</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">consumer_key</span> <span class="o">=</span> <span class="s1">'consumer key'</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">consumer_secret</span> <span class="o">=</span> <span class="s1">'consumer secret'</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h3>Get an Account object</h3>
+
+<p>Once you're authenticated, you can get an <code>Account</code> object, which is what you
+will be dealing with most of the time.</p>
+
+<div class="highlight">
+<pre><span class="n">account</span> <span class="o">=</span> <span class="no">ContextIO</span><span class="o">::</span><span class="no">Account</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">first</span>
+</pre>
+</div>
+
+
+<p>You can also find accounts matching a given email address.</p>
+
+<div class="highlight">
+<pre><span class="n">account</span> <span class="o">=</span> <span class="no">ContextIO</span><span class="o">::</span><span class="no">Account</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">'me@example.org'</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+</pre>
+</div>
+
+
+<h2>Contributing</h2>
+
+<p>In the spirit of <a href="http://www.gnu.org/philosophy/free-sw.html">free software</a>, <strong>everyone</strong> is encouraged to help
+improve this project.</p>
+
+<p>Here are some ways <em>you</em> can contribute:</p>
+
+<ul>
+<li>by using alpha, beta and prerelease versions</li>
+<li>by reporting bugs</li>
+<li>by suggesting new features</li>
+<li>by writing or editing documentation</li>
+<li>by writing specifications</li>
+<li>by writing code (<strong>no patch is too small</strong>: fix typos, add comments, clean up
+inconsistent whitespace)</li>
+<li>by refactoring code</li>
+<li>by closing <a href="https://github.com/dvyjones/context-io/issues">issues</a>
+</li>
+<li>by reviewing patches</li>
+</ul><h3>Submitting an Issue</h3>
+
+<p>We use the <a href="https://github.com/dvyjones/context-io/issues">GitHub issue tracker</a> to track bugs and features. Before
+submitting a bug report or feature request, check to make sure it hasn't
+already been submitted. You can indicate support for an existing issue by
+writing a comment saying you have the same issue (please include what version
+of the gem you are using, as well as what version of ruby). When submitting a
+bug report, please include a [gist][gist] that includes a stack trace and any
+details that may be necessary to reproduce the bug, including your gem version,
+Ruby version and operating system. Ideally, a bug report should include a pull
+request with failing specs.</p>
+
+<h3>Submitting a Pull Request</h3>
+
+<ol>
+<li>Fork the project.</li>
+<li>Create a topic branch.</li>
+<li>Implement your feature or bug fix.</li>
+<li>Add documentation for your feature or bug fix.</li>
+<li>Run <code>bundle exec rake yard</code>. If your changes are not 100% documented, go
+back to step 4.</li>
+<li>Add specs for your feature or bug fix.</li>
+<li>Run <code>bundle exec rake spec</code>. If your changes are not 100% covered, go back
+to step 6.</li>
+<li>Commit your changes. If necessary, merge in upstream and rebase your
+changes. Push your changes.</li>
+<li>Submit a pull request. Please do not include changes to the gemspec,
+version or history file.</li>
+</ol><h2>Copyright</h2>
+
+<p>Copyright (c) 2012 Henrik Hodne. See LICENSE for details.</p>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/dvyjones">dvyjones</a> can be found on <a href="https://github.com/dvyjones/context-io">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
